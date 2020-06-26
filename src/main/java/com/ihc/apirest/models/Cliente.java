@@ -9,7 +9,6 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -34,10 +33,6 @@ public class Cliente
 	private String telefono;
 	private String sexo;
 
-	// @OneToMany(cascade = CascadeType.ALL)
-	// @JoinColumn(name ="idCliente")
-	// private List<Visita> lstVisitas;
-
-	@OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
     private List<Visita> lstVisitas;
 }
