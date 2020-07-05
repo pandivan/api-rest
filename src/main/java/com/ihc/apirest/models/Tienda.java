@@ -5,15 +5,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import java.util.Date;
-import java.util.List;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 
 
 
@@ -22,21 +17,16 @@ import javax.persistence.OneToMany;
 @NoArgsConstructor
 @ToString
 @Entity
-public class Cliente
+public class Tienda
 {
     @Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long idCliente;
-	private Long idBarrio;
+	private Long idTienda;
+	private Long idGeografia;
 	private Long idTiempoFechaCreacion;
-	private String cedula;
+	private String nit;
 	private String nombre;
-	private String telefono;
+	private String password;
 	private String direccion;
-	private Date fechaNacimiento;
-	private String sexo;
-	private String tipoCliente;
-
-	@OneToMany(mappedBy = "dimension.cliente", cascade = CascadeType.ALL)
-    private List<Visita> lstVisitas;
+	private String telefono;
 }

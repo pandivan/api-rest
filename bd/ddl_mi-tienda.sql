@@ -7,7 +7,23 @@ drop SCHEMA referencial;
 drop SCHEMA dimension;
 drop SCHEMA hechos; 
 
+
+drop table hechos.pedido;
+drop table hechos.visita;
+drop table dimension.estado;
+drop table dimension.tienda;
+drop table dimension.producto;
+drop table dimension.cliente;
+drop table dimension.barrio;
+drop table dimension.empresa;
+drop table dimension.geografia;
+drop table dimension.tiempo;
+
 */
+
+
+
+
 
 
 create table dimension.estado
@@ -86,7 +102,7 @@ create table dimension.tienda
 (
 id_tienda bigserial not null,
 id_geografia bigserial not null,
-id_tiempo bigserial not null,
+id_tiempo_fecha_creacion bigserial not null,
 nit varchar(50) not null,
 nombre varchar(255) not null,
 password varchar(255) not null,
@@ -96,7 +112,7 @@ primary key (id_tienda)
 );
 
 ALTER TABLE dimension.tienda ADD CONSTRAINT tienda_geografia_fk FOREIGN KEY (id_geografia) REFERENCES dimension.geografia (id_geografia);
-ALTER TABLE dimension.tienda ADD CONSTRAINT tienda_tiempo_fk FOREIGN KEY (id_tiempo) REFERENCES dimension.tiempo (id_tiempo);
+ALTER TABLE dimension.tienda ADD CONSTRAINT tienda_tiempo_fk FOREIGN KEY (id_tiempo_fecha_creacion) REFERENCES dimension.tiempo (id_tiempo);
 
 
 
@@ -145,7 +161,7 @@ create table dimension.cliente
 (
 id_cliente bigserial not null,
 id_barrio bigserial not null,
-id_tiempo bigserial not null,
+id_tiempo_fecha_creacion bigserial not null,
 cedula varchar(20) null,
 nombre varchar(255) not null,
 telefono varchar(50) not null,
@@ -157,7 +173,7 @@ primary key (id_cliente)
 );
 
 ALTER TABLE dimension.cliente ADD CONSTRAINT cliente_barrio_fk FOREIGN KEY (id_barrio) REFERENCES dimension.barrio (id_barrio);
-ALTER TABLE dimension.cliente ADD CONSTRAINT cliente_tiempo_fk FOREIGN KEY (id_tiempo) REFERENCES dimension.tiempo (id_tiempo);
+ALTER TABLE dimension.cliente ADD CONSTRAINT cliente_tiempo_fk FOREIGN KEY (id_tiempo_fecha_creacion) REFERENCES dimension.tiempo (id_tiempo);
 
 
 
@@ -166,7 +182,7 @@ ALTER TABLE dimension.cliente ADD CONSTRAINT cliente_tiempo_fk FOREIGN KEY (id_t
 
 
 
-create table hechos.pedidos
+create table hechos.pedido
 (
 id_pedido bigserial not null,
 id_tienda bigserial not null,
@@ -181,17 +197,17 @@ primary key (id_pedido)
 );
 
 
-ALTER TABLE hechos.pedidos ADD CONSTRAINT pedidos_tienda_fk FOREIGN KEY (id_tienda) REFERENCES dimension.tienda (id_tienda);
-ALTER TABLE hechos.pedidos ADD CONSTRAINT pedidos_producto_fk FOREIGN KEY (id_producto) REFERENCES dimension.producto (id_producto);
-ALTER TABLE hechos.pedidos ADD CONSTRAINT pedidos_cliente_fk FOREIGN KEY (id_cliente) REFERENCES dimension.cliente (id_cliente);
-ALTER TABLE hechos.pedidos ADD CONSTRAINT pedidos_tiempo_fk FOREIGN KEY (id_tiempo) REFERENCES dimension.tiempo (id_tiempo);
-ALTER TABLE hechos.pedidos ADD CONSTRAINT pedidos_estado_fk FOREIGN KEY (id_estado) REFERENCES dimension.estado (id_estado);
+ALTER TABLE hechos.pedido ADD CONSTRAINT pedido_tienda_fk FOREIGN KEY (id_tienda) REFERENCES dimension.tienda (id_tienda);
+ALTER TABLE hechos.pedido ADD CONSTRAINT pedido_producto_fk FOREIGN KEY (id_producto) REFERENCES dimension.producto (id_producto);
+ALTER TABLE hechos.pedido ADD CONSTRAINT pedido_cliente_fk FOREIGN KEY (id_cliente) REFERENCES dimension.cliente (id_cliente);
+ALTER TABLE hechos.pedido ADD CONSTRAINT pedido_tiempo_fk FOREIGN KEY (id_tiempo) REFERENCES dimension.tiempo (id_tiempo);
+ALTER TABLE hechos.pedido ADD CONSTRAINT pedido_estado_fk FOREIGN KEY (id_estado) REFERENCES dimension.estado (id_estado);
 
 
 
 
 
-create table hechos.visitas
+create table hechos.visita
 (
 id_visita bigserial not null,
 id_cliente bigserial not null,
@@ -202,20 +218,11 @@ primary key (id_visita)
 );
 
 
-ALTER TABLE hechos.visitas ADD CONSTRAINT visitas_cliente_fk FOREIGN KEY (id_cliente) REFERENCES dimension.cliente (id_cliente);
-ALTER TABLE hechos.visitas ADD CONSTRAINT visitas_tiempo_fk FOREIGN KEY (id_tiempo) REFERENCES dimension.tiempo (id_tiempo);
+ALTER TABLE hechos.visita ADD CONSTRAINT visita_cliente_fk FOREIGN KEY (id_cliente) REFERENCES dimension.cliente (id_cliente);
+ALTER TABLE hechos.visita ADD CONSTRAINT visita_tiempo_fk FOREIGN KEY (id_tiempo) REFERENCES dimension.tiempo (id_tiempo);
 
 
 
-/*
-drop table hechos.pedidos;
-drop table hechos.visitas;
-drop table dimension.estado;
-drop table dimension.tienda;
-drop table dimension.producto;
-drop table dimension.cliente;
-drop table dimension.barrio;
-drop table dimension.empresa;
-drop table dimension.geografia;
-drop table dimension.tiempo;
-*/
+
+
+
