@@ -33,6 +33,7 @@ public class Cliente
 	private String nombre;
 	private String telefono;
 	private String direccion;
+	private String email;
 	private Date fechaNacimiento;
 	private String sexo;
 	private String tipoCliente;

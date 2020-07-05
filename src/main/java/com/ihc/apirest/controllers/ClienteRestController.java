@@ -1,5 +1,8 @@
 package com.ihc.apirest.controllers;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import com.ihc.apirest.models.Cliente;
 import com.ihc.apirest.models.Visita;
 import com.ihc.apirest.repository.ClienteRepository;
@@ -17,8 +20,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 
 
+
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/cliente")
 public class ClienteRestController 
 {
     @Autowired
@@ -30,7 +34,7 @@ public class ClienteRestController
      * @param cliente, Cliente a crear
      * @return Cliente creado
      */
-    @PostMapping(value="/cliente")
+    @PostMapping(value="/covid")
     public ResponseEntity<Boolean> crearCliente(@RequestBody Cliente cliente)
     {
         try 
@@ -49,12 +53,13 @@ public class ClienteRestController
      }
 
 
+
      /**
      * Método que permite actualizar un cliente en BD
      * @param cliente, Cliente actualizar
      * @return Cliente actualizado
      */
-    @PutMapping("/cliente")
+    @PutMapping("/covid")
     public ResponseEntity<Boolean> actualizarCliente(@RequestBody Cliente cliente)
     {
         try 
@@ -78,7 +83,7 @@ public class ClienteRestController
      * @param cedula, Cédula con la cual se buscara el cliente en BD
      * @return Cliente encontrado
      */
-    @GetMapping(value = "/cliente/{cedula}")
+    @GetMapping(value = "/covid/{cedula}")
     public ResponseEntity<Cliente> findByCedula(@PathVariable String cedula) 
     {
         try
@@ -94,6 +99,76 @@ public class ClienteRestController
                 }
             }
             
+            return new ResponseEntity<Cliente>(cliente, HttpStatus.OK);
+        }
+        catch (Exception e) 
+        {
+			return new ResponseEntity<Cliente>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    /**
+     * Método que permite crear un nuevo cliente en BD, para la app [mi-bario-app]
+     * @param cliente, Cliente a crear
+     * @return Cliente creado
+     */
+    @PostMapping(value="/barrio")
+    public ResponseEntity<Boolean> crearClienteBarrio(@RequestBody Cliente cliente)
+    {
+        try 
+        {
+            Long idTiempoFechaCreacion = Long.parseLong(new SimpleDateFormat("yyyyMMdd").format(new Date()));
+            
+            cliente.setIdTiempoFechaCreacion(idTiempoFechaCreacion);
+
+            //Este metodo creará un usuario en BD para la app de [mi-bario-app]
+            clienteRepository.save(cliente);
+
+            return new ResponseEntity<Boolean>(true, HttpStatus.CREATED);
+		} 
+        catch (Exception e) 
+        {
+            return new ResponseEntity<Boolean>(false, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+     }
+
+
+
+     /**
+     * Método que permite actualizar un cliente en BD
+     * @param cliente, Cliente actualizar
+     * @return Cliente actualizado
+     */
+    @PutMapping("/barrio")
+    public ResponseEntity<Boolean> actualizarClienteBarrio(@RequestBody Cliente cliente)
+    {
+        try 
+        {
+            //Este metodo creará un usuario en BD
+            clienteRepository.save(cliente);
+            
+            return new ResponseEntity<Boolean>(true, HttpStatus.CREATED);
+		} 
+        catch (Exception e) 
+        {
+            return new ResponseEntity<Boolean>(false, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+     }
+	
+    
+    /**
+     * Método que permite obtener un cliente según el telefono o email
+     * @param cliente, Cliente que contiente telefono o email con el cual se buscara al cliente en BD
+     * @return Cliente encontrado
+     */
+    @PostMapping(value = "/barrio/validar")
+    public ResponseEntity<Cliente> findByTelefonoOrEmail(@RequestBody Cliente cliente) 
+    {
+        try
+        {
+            Cliente clienteBD = clienteRepository.findByTelefonoOrEmail(cliente);
+
             return new ResponseEntity<Cliente>(cliente, HttpStatus.OK);
         }
         catch (Exception e) 

@@ -18,8 +18,8 @@ drop table dimension.barrio;
 drop table dimension.empresa;
 drop table dimension.geografia;
 drop table dimension.tiempo;
-
 */
+
 
 
 
@@ -166,6 +166,7 @@ cedula varchar(20) null,
 nombre varchar(255) not null,
 telefono varchar(50) not null,
 direccion varchar(255) null,
+email varchar(100) null,
 fecha_nacimiento date null,
 sexo varchar(1) not null,
 tipo_cliente varchar(10) not null,
@@ -223,6 +224,16 @@ ALTER TABLE hechos.visita ADD CONSTRAINT visita_tiempo_fk FOREIGN KEY (id_tiempo
 
 
 
+
+insert into dimension.geografia(id_pais,pais,departamento,ciudad) values('CO','Colombia','Valle del Cauca','Cali');
+
+insert into dimension.barrio(nombre) values('Valle de Lili');
+
+select * from dimension.tiempo;
+
+select * from dimension.barrio;
+
+select * from dimension.cliente;
 
 
 
