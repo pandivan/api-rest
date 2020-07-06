@@ -81,12 +81,12 @@ public class ClienteRestController
      * @param cedula, Cédula con la cual se buscara el cliente en BD
      * @return Cliente encontrado
      */
-    @GetMapping(value = "/covid/{cedula}/{idTienda}")
-    public ResponseEntity<Cliente> validarClienteByCedulaAndIdTienda(@PathVariable String cedula, @PathVariable Long idTienda) 
+    @GetMapping(value = "/covid/{cedula}")
+    public ResponseEntity<Cliente> findByCedula(@PathVariable String cedula) 
     {
         try
         {
-            Cliente cliente = clienteRepository.validarClienteByCedulaAndIdTienda(cedula, idTienda);
+            Cliente cliente = clienteRepository.findByCedula(cedula);
 
             if(null != cliente)
             {
