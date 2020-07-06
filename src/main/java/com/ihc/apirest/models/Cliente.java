@@ -14,6 +14,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 
 
@@ -22,13 +23,13 @@ import javax.persistence.OneToMany;
 @NoArgsConstructor
 @ToString
 @Entity
+@Table(schema="dimension")
 public class Cliente
 {
     @Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long idCliente;
 	private Long idBarrio;
-	private Long idTiempoFechaCreacion;
 	private String cedula;
 	private String nombre;
 	private String telefono;
@@ -37,7 +38,8 @@ public class Cliente
 	private Date fechaNacimiento;
 	private String sexo;
 	private String tipoCliente;
+	private String password;
 
-	@OneToMany(mappedBy = "dimension.cliente", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
     private List<Visita> lstVisitas;
 }

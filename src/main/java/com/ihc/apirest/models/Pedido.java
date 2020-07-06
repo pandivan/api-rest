@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 
 
@@ -17,7 +18,7 @@ import javax.persistence.Id;
 @NoArgsConstructor
 @ToString
 @Entity
-// @Table(name="hechos.pedidos")
+@Table(schema="hechos")
 public class Pedido
 {
     @Id

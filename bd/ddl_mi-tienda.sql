@@ -7,6 +7,7 @@ drop SCHEMA referencial;
 drop SCHEMA dimension;
 drop SCHEMA hechos; 
 
+*/
 
 drop table hechos.pedido;
 drop table hechos.visita;
@@ -18,8 +19,6 @@ drop table dimension.barrio;
 drop table dimension.empresa;
 drop table dimension.geografia;
 drop table dimension.tiempo;
-*/
-
 
 
 
@@ -70,7 +69,7 @@ ALTER TABLE dimension.empresa ADD CONSTRAINT empresa_geografia_fk FOREIGN KEY (i
 
 create table dimension.tiempo
 (
-id_tiempo bigserial not null,
+id_tiempo integer not null,
 fecha date not null,
 año smallint not null,
 semestre smallint not null,
@@ -102,7 +101,7 @@ create table dimension.tienda
 (
 id_tienda bigserial not null,
 id_geografia bigserial not null,
-id_tiempo_fecha_creacion bigserial not null,
+id_tiempo_fecha_creacion integer DEFAULT cast(to_char(now(), 'YYYYMMDD') as integer) not null,
 nit varchar(50) not null,
 nombre varchar(255) not null,
 password varchar(255) not null,
@@ -113,7 +112,7 @@ primary key (id_tienda)
 
 ALTER TABLE dimension.tienda ADD CONSTRAINT tienda_geografia_fk FOREIGN KEY (id_geografia) REFERENCES dimension.geografia (id_geografia);
 ALTER TABLE dimension.tienda ADD CONSTRAINT tienda_tiempo_fk FOREIGN KEY (id_tiempo_fecha_creacion) REFERENCES dimension.tiempo (id_tiempo);
-
+--alter table dimension.tienda alter column id_tiempo_fecha_creacion drop not null;
 
 
 
@@ -154,14 +153,11 @@ primary key (id_barrio)
 
 
 
-
-
-
 create table dimension.cliente
 (
 id_cliente bigserial not null,
 id_barrio bigserial not null,
-id_tiempo_fecha_creacion bigserial not null,
+id_tiempo_fecha_creacion integer DEFAULT cast(to_char(now(), 'YYYYMMDD') as integer) not null,
 cedula varchar(20) null,
 nombre varchar(255) not null,
 telefono varchar(50) not null,
@@ -170,15 +166,14 @@ email varchar(100) null,
 fecha_nacimiento date null,
 sexo varchar(1) not null,
 tipo_cliente varchar(10) not null,
+password varchar(255) not null,
 primary key (id_cliente)
 );
 
 ALTER TABLE dimension.cliente ADD CONSTRAINT cliente_barrio_fk FOREIGN KEY (id_barrio) REFERENCES dimension.barrio (id_barrio);
 ALTER TABLE dimension.cliente ADD CONSTRAINT cliente_tiempo_fk FOREIGN KEY (id_tiempo_fecha_creacion) REFERENCES dimension.tiempo (id_tiempo);
-
-
-
-
+alter table dimension.cliente alter column id_barrio drop not null;
+--alter table dimension.cliente alter column id_tiempo_fecha_creacion drop not null;
 
 
 
@@ -189,7 +184,7 @@ id_pedido bigserial not null,
 id_tienda bigserial not null,
 id_producto bigserial not null,
 id_cliente bigserial not null,
-id_tiempo bigserial not null,
+id_tiempo integer DEFAULT cast(to_char(now(), 'YYYYMMDD') as integer) not null,
 id_estado bigserial not null,
 cantidad smallint not null,
 valor numeric(8,2) not null,
@@ -212,7 +207,8 @@ create table hechos.visita
 (
 id_visita bigserial not null,
 id_cliente bigserial not null,
-id_tiempo bigserial not null,
+id_tienda bigserial not null,
+id_tiempo integer DEFAULT cast(to_char(now(), 'YYYYMMDD') as integer) not null,
 temperatura numeric(4,2) not null,
 fecha_visita TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP not null,
 primary key (id_visita)
@@ -221,13 +217,26 @@ primary key (id_visita)
 
 ALTER TABLE hechos.visita ADD CONSTRAINT visita_cliente_fk FOREIGN KEY (id_cliente) REFERENCES dimension.cliente (id_cliente);
 ALTER TABLE hechos.visita ADD CONSTRAINT visita_tiempo_fk FOREIGN KEY (id_tiempo) REFERENCES dimension.tiempo (id_tiempo);
+ALTER TABLE hechos.visita ADD CONSTRAINT visita_tienda_fk FOREIGN KEY (id_tienda) REFERENCES dimension.tienda (id_tienda);
 
+
+SET timezone TO 'America/Bogota';
 
 
 
 insert into dimension.geografia(id_pais,pais,departamento,ciudad) values('CO','Colombia','Valle del Cauca','Cali');
-
+insert into dimension.geografia(id_pais,pais,departamento,ciudad) values('CO','Colombia','Nariño','Pasto');
 insert into dimension.barrio(nombre) values('Valle de Lili');
+INSERT INTO dimension.tiempo SELECT * FROM dimension.tiempo2;
+--insert into dimension.tienda(id_geografia,id_tiempo_fecha_creacion,nit,nombre,password,direccion,telefono) values(2,20200701,'900.317.814-5','unicentro','1234','Calle 11 Nº 34-78 Barrio La Aurora de Pasto','3104709828');
+
+
+
+
+
+select * from dimension.tienda;
+
+select * from dimension.geografia;
 
 select * from dimension.tiempo;
 
@@ -235,5 +244,14 @@ select * from dimension.barrio;
 
 select * from dimension.cliente;
 
+select * from hechos.visita;
 
 
+
+
+
+
+--create table dimension.tiempo2 as (select * from dimension.tiempo);
+
+--delete from dimension.cliente; 
+*/

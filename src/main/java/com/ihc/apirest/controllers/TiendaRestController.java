@@ -1,8 +1,5 @@
 package com.ihc.apirest.controllers;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import com.ihc.apirest.models.Tienda;
 import com.ihc.apirest.repository.TiendaRepository;
 
@@ -37,10 +34,6 @@ public class TiendaRestController
     {
         try 
         {
-            Long idTiempoFechaCreacion = Long.parseLong(new SimpleDateFormat("yyyyMMdd").format(new Date()));
-            
-            tienda.setIdTiempoFechaCreacion(idTiempoFechaCreacion);
-
             //Este metodo creará una tienda en BD
             tiendaRepository.save(tienda);
 
@@ -76,18 +69,18 @@ public class TiendaRestController
 	
     
     /**
-     * Método que permite obtener un tienda según el nit
-     * @param nit, Nit con el cual se buscara la tienda en BD
+     * Método que permite obtener una tienda según el nit o telefono y el password
+     * @param tienda, Tienda que contiene el nit o telefono y el password con cual se buscara la tienda en BD
      * @return Tienda encontrada
      */
-    @GetMapping(value = "/tienda/{nit}")
-    public ResponseEntity<Tienda> findByNit(@PathVariable String nit) 
+    @PostMapping(value = "/tienda/validar")
+    public ResponseEntity<Tienda> validarTienda(@RequestBody Tienda tienda) 
     {
         try
         {
-            Tienda tienda = tiendaRepository.findByNit(nit);
+            Tienda tiendaBD = tiendaRepository.validarTienda(tienda.getTelefono(), tienda.getNit(), tienda.getPassword());
             
-            return new ResponseEntity<Tienda>(tienda, HttpStatus.OK);
+            return new ResponseEntity<Tienda>(tiendaBD, HttpStatus.OK);
         }
         catch (Exception e) 
         {

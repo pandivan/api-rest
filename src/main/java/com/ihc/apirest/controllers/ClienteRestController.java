@@ -1,8 +1,5 @@
 package com.ihc.apirest.controllers;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import com.ihc.apirest.models.Cliente;
 import com.ihc.apirest.models.Visita;
 import com.ihc.apirest.repository.ClienteRepository;
@@ -27,6 +24,7 @@ public class ClienteRestController
 {
     @Autowired
     ClienteRepository clienteRepository;
+    
 
 
     /**
@@ -118,10 +116,6 @@ public class ClienteRestController
     {
         try 
         {
-            Long idTiempoFechaCreacion = Long.parseLong(new SimpleDateFormat("yyyyMMdd").format(new Date()));
-            
-            cliente.setIdTiempoFechaCreacion(idTiempoFechaCreacion);
-
             //Este metodo creará un usuario en BD para la app de [mi-bario-app]
             clienteRepository.save(cliente);
 
@@ -145,7 +139,7 @@ public class ClienteRestController
     {
         try 
         {
-            //Este metodo creará un usuario en BD
+            //Este metodo creará un cliente en BD
             clienteRepository.save(cliente);
             
             return new ResponseEntity<Boolean>(true, HttpStatus.CREATED);
@@ -163,13 +157,13 @@ public class ClienteRestController
      * @return Cliente encontrado
      */
     @PostMapping(value = "/barrio/validar")
-    public ResponseEntity<Cliente> findByTelefonoOrEmail(@RequestBody Cliente cliente) 
+    public ResponseEntity<Cliente> validarCliente(@RequestBody Cliente cliente) 
     {
         try
         {
-            Cliente clienteBD = clienteRepository.findByTelefonoOrEmail(cliente);
+            Cliente clienteBD = clienteRepository.validarCliente(cliente.getTelefono(), cliente.getEmail(), cliente.getPassword());
 
-            return new ResponseEntity<Cliente>(cliente, HttpStatus.OK);
+            return new ResponseEntity<Cliente>(clienteBD, HttpStatus.OK);
         }
         catch (Exception e) 
         {
