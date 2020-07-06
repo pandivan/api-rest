@@ -251,6 +251,7 @@ select * from hechos.visita;
 
 
 
+
 --create table dimension.tiempo2 as (select * from dimension.tiempo);
 
 --delete from dimension.cliente; 
