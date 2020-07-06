@@ -233,6 +233,8 @@ INSERT INTO dimension.tiempo SELECT * FROM dimension.tiempo2;
 insert into dimension.tienda(id_geografia,id_tiempo_fecha_creacion,nit,nombre,password,direccion,telefono) values(2,20200701,'900.317.814-5','unicentro','1234','Calle 11 Nº 34-78 Barrio La Aurora de Pasto','3104709828');
 insert into dimension.tienda(id_geografia,id_tiempo_fecha_creacion,nit,nombre,password,direccion,telefono) values(1,20200702,'777','centro comercial unico','1234','Salomia','3333333');
 
+insert into dimension.tienda(id_geografia,id_tiempo_fecha_creacion,nit,nombre,password,direccion,telefono) values(1,20200702,'888','centro comercial la 14','1234','Lili','44444');
+
 
 
 
@@ -245,18 +247,23 @@ select * from dimension.tiempo;
 
 select * from dimension.barrio;
 
-select * from dimension.cliente;
+select * from dimension.cliente order by 1;
 
-select * from hechos.visita;
+select * from hechos.visita order by 2;
 
 
 select * 
 from dimension.cliente c, hechos.visita v
 where c.id_cliente = v.id_cliente
-and c.cedula = '1107034509'
-and v.id_tienda = 1
+--and c.cedula = '2'
+--and v.id_tienda = 2
+and c.cedula = '4'
+order by 1
 ;
 
+
+delete from hechos.visita;-- where id_cliente = 3;
+delete from dimension.cliente; --where id_cliente = 3;
 
 
 
