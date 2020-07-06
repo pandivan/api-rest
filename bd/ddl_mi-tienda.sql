@@ -107,6 +107,7 @@ nombre varchar(255) not null,
 password varchar(255) not null,
 direccion varchar(255) not null,
 telefono varchar(50) not null,
+estado smallint default 1 not null,
 primary key (id_tienda)
 );
 
@@ -166,7 +167,8 @@ email varchar(100) null,
 fecha_nacimiento date null,
 sexo varchar(1) not null,
 tipo_cliente varchar(10) not null,
-password varchar(255) not null,
+password varchar(255) null,
+barrio varchar(255) null,
 primary key (id_cliente)
 );
 
@@ -228,7 +230,8 @@ insert into dimension.geografia(id_pais,pais,departamento,ciudad) values('CO','C
 insert into dimension.geografia(id_pais,pais,departamento,ciudad) values('CO','Colombia','Nariño','Pasto');
 insert into dimension.barrio(nombre) values('Valle de Lili');
 INSERT INTO dimension.tiempo SELECT * FROM dimension.tiempo2;
---insert into dimension.tienda(id_geografia,id_tiempo_fecha_creacion,nit,nombre,password,direccion,telefono) values(2,20200701,'900.317.814-5','unicentro','1234','Calle 11 Nº 34-78 Barrio La Aurora de Pasto','3104709828');
+insert into dimension.tienda(id_geografia,id_tiempo_fecha_creacion,nit,nombre,password,direccion,telefono) values(2,20200701,'900.317.814-5','unicentro','1234','Calle 11 Nº 34-78 Barrio La Aurora de Pasto','3104709828');
+insert into dimension.tienda(id_geografia,id_tiempo_fecha_creacion,nit,nombre,password,direccion,telefono) values(1,20200702,'777','centro comercial unico','1234','Salomia','3333333');
 
 
 
@@ -245,6 +248,15 @@ select * from dimension.barrio;
 select * from dimension.cliente;
 
 select * from hechos.visita;
+
+
+select * 
+from dimension.cliente c, hechos.visita v
+where c.id_cliente = v.id_cliente
+and c.cedula = '1107034509'
+and v.id_tienda = 1
+;
+
 
 
 
