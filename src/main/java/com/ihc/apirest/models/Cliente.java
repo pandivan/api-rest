@@ -39,6 +39,7 @@ public class Cliente
 	private String sexo;
 	private String tipoCliente;
 	private String password;
+	private String barrio;
 
 	@OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
     private List<Visita> lstVisitas;
