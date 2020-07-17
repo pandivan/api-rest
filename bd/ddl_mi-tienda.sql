@@ -113,7 +113,7 @@ primary key (id_tienda)
 
 ALTER TABLE dimension.tienda ADD CONSTRAINT tienda_geografia_fk FOREIGN KEY (id_geografia) REFERENCES dimension.geografia (id_geografia);
 ALTER TABLE dimension.tienda ADD CONSTRAINT tienda_tiempo_fk FOREIGN KEY (id_tiempo_fecha_creacion) REFERENCES dimension.tiempo (id_tiempo);
---alter table dimension.tienda alter column id_tiempo_fecha_creacion drop not null;
+
 
 
 
@@ -169,13 +169,14 @@ sexo varchar(1) not null,
 tipo_cliente varchar(10) not null,
 password varchar(255) null,
 barrio varchar(255) null,
+perfil varchar(10) null,
 primary key (id_cliente)
 );
 
 ALTER TABLE dimension.cliente ADD CONSTRAINT cliente_barrio_fk FOREIGN KEY (id_barrio) REFERENCES dimension.barrio (id_barrio);
 ALTER TABLE dimension.cliente ADD CONSTRAINT cliente_tiempo_fk FOREIGN KEY (id_tiempo_fecha_creacion) REFERENCES dimension.tiempo (id_tiempo);
 alter table dimension.cliente alter column id_barrio drop not null;
---alter table dimension.cliente alter column id_tiempo_fecha_creacion drop not null;
+
 
 
 
@@ -232,7 +233,6 @@ insert into dimension.barrio(nombre) values('Valle de Lili');
 INSERT INTO dimension.tiempo SELECT * FROM dimension.tiempo2;
 insert into dimension.tienda(id_geografia,id_tiempo_fecha_creacion,nit,nombre,password,direccion,telefono) values(2,20200701,'900.317.814-5','unicentro','1234','Calle 11 Nº 34-78 Barrio La Aurora de Pasto','3104709828');
 insert into dimension.tienda(id_geografia,id_tiempo_fecha_creacion,nit,nombre,password,direccion,telefono) values(1,20200702,'777','centro comercial unico','1234','Salomia','3333333');
-
 insert into dimension.tienda(id_geografia,id_tiempo_fecha_creacion,nit,nombre,password,direccion,telefono) values(1,20200702,'888','centro comercial la 14','1234','Lili','44444');
 
 
@@ -257,21 +257,17 @@ from dimension.cliente c, hechos.visita v
 where c.id_cliente = v.id_cliente
 --and c.cedula = '2'
 --and v.id_tienda = 2
-and c.cedula = '4'
+--and c.cedula = '13072207'
 order by 1
 ;
 
 
 delete from hechos.visita;-- where id_cliente = 3;
-delete from dimension.cliente; --where id_cliente = 3;
-
-
-
-
+delete from dimension.cliente where id_cliente <> 22;
 
 
 
 --create table dimension.tiempo2 as (select * from dimension.tiempo);
 
---delete from dimension.cliente; 
+
 */

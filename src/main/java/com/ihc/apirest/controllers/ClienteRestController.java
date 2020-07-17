@@ -117,6 +117,14 @@ public class ClienteRestController
     {
         try 
         {
+            Cliente clienteBD = clienteRepository.findByEmail(cliente.getEmail());
+
+            //Se valida que el email del cliente no este registrado en la plataforma
+            if(null != clienteBD)
+            {
+                return new ResponseEntity<Boolean>(false, HttpStatus.CREATED);
+            }
+
             //Este metodo creará un usuario en BD para la app de [mi-bario-app]
             clienteRepository.save(cliente);
 

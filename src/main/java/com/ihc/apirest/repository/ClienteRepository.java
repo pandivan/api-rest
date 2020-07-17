@@ -18,4 +18,6 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long>
     // Cliente validarClienteByCedulaAndIdTienda(String cedula, Long idTienda);
 
     Cliente findByCedula(String cedula);
+
+    Cliente findByEmail(String email);
 }
