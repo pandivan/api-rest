@@ -90,7 +90,7 @@ public class ClienteRestController
 
             if(null != cliente)
             {
-                //Se suprime el objeto cliente de la vista ya que al devolver la entidada cliente por apirest no soporte referencias ciclicas
+                //Se suprime el objeto cliente de la vista ya que al devolver la entidad cliente por apirest no soporta las referencias ciclicas
                 for (Visita visita : cliente.getLstVisitas())
                 {
                     visita.setCliente(null);

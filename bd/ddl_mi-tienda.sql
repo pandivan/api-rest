@@ -9,9 +9,9 @@ drop SCHEMA hechos;
 
 */
 
-drop table hechos.pedido;
+drop table hechos.venta;
 drop table hechos.visita;
-drop table dimension.estado;
+drop table dimension.pedido;
 drop table dimension.tienda;
 drop table dimension.producto;
 drop table dimension.cliente;
@@ -19,6 +19,7 @@ drop table dimension.barrio;
 drop table dimension.empresa;
 drop table dimension.geografia;
 drop table dimension.tiempo;
+drop table dimension.estado;
 
 
 
@@ -58,11 +59,12 @@ id_geografia bigserial not null,
 tipo varchar(1) not null,
 nit varchar(50) null,
 nombre varchar(255) not null,
-estado smallint not null,
+id_estado bigserial not null,
 primary key (id_empresa)
 );
 
 ALTER TABLE dimension.empresa ADD CONSTRAINT empresa_geografia_fk FOREIGN KEY (id_geografia) REFERENCES dimension.geografia (id_geografia);
+ALTER TABLE dimension.empresa ADD CONSTRAINT empresa_estado_fk FOREIGN KEY (id_estado) REFERENCES dimension.estado (id_estado);
 
 
 
@@ -132,13 +134,12 @@ ean varchar(100) not null,
 nombre varchar(100) not null,
 nivel smallint not null,
 precio numeric(8,2) null,
-estado smallint not null,
+id_estado bigserial not null,
 primary key (id_producto)
 );
 
 ALTER TABLE dimension.producto ADD CONSTRAINT producto_empresa_fk FOREIGN KEY (id_empresa) REFERENCES dimension.empresa (id_empresa);
-
-
+ALTER TABLE dimension.producto ADD CONSTRAINT producto_estado_fk FOREIGN KEY (id_estado) REFERENCES dimension.estado (id_estado);
 
 
 
@@ -169,7 +170,6 @@ sexo varchar(1) not null,
 tipo_cliente varchar(10) not null,
 password varchar(255) null,
 barrio varchar(255) null,
-perfil varchar(10) null,
 primary key (id_cliente)
 );
 
@@ -181,7 +181,45 @@ alter table dimension.cliente alter column id_barrio drop not null;
 
 
 
-create table hechos.pedido
+
+create table dimension.pedido
+(
+id_pedido bigserial not null,
+id_tienda bigserial not null,
+id_estado bigserial not null,
+fecha_pedido TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP not null,
+primary key (id_pedido)
+);
+
+ALTER TABLE dimension.pedido ADD CONSTRAINT pedido_tienda_fk FOREIGN KEY (id_tienda) REFERENCES dimension.tienda (id_tienda);
+ALTER TABLE dimension.pedido ADD CONSTRAINT pedido_estado_fk FOREIGN KEY (id_estado) REFERENCES dimension.estado (id_estado);
+alter table dimension.pedido alter column id_tienda drop not null;
+
+
+
+create table hechos.venta
+(
+id_venta bigserial not null,
+id_pedido bigserial not null,
+id_producto bigserial not null,
+id_cliente bigserial not null,
+id_tiempo integer DEFAULT cast(to_char(now(), 'YYYYMMDD') as integer) not null,
+cantidad smallint not null,
+valor numeric(8,2) not null,
+primary key (id_venta)
+);
+
+ALTER TABLE hechos.venta ADD CONSTRAINT venta_pedido_fk FOREIGN KEY (id_pedido) REFERENCES dimension.pedido (id_pedido);
+ALTER TABLE hechos.venta ADD CONSTRAINT venta_producto_fk FOREIGN KEY (id_producto) REFERENCES dimension.producto (id_producto);
+ALTER TABLE hechos.venta ADD CONSTRAINT venta_cliente_fk FOREIGN KEY (id_cliente) REFERENCES dimension.cliente (id_cliente);
+ALTER TABLE hechos.venta ADD CONSTRAINT venta_tiempo_fk FOREIGN KEY (id_tiempo) REFERENCES dimension.tiempo (id_tiempo);
+
+
+
+
+
+/*
+create table hechos.venta
 (
 id_pedido bigserial not null,
 id_tienda bigserial not null,
@@ -201,7 +239,7 @@ ALTER TABLE hechos.pedido ADD CONSTRAINT pedido_producto_fk FOREIGN KEY (id_prod
 ALTER TABLE hechos.pedido ADD CONSTRAINT pedido_cliente_fk FOREIGN KEY (id_cliente) REFERENCES dimension.cliente (id_cliente);
 ALTER TABLE hechos.pedido ADD CONSTRAINT pedido_tiempo_fk FOREIGN KEY (id_tiempo) REFERENCES dimension.tiempo (id_tiempo);
 ALTER TABLE hechos.pedido ADD CONSTRAINT pedido_estado_fk FOREIGN KEY (id_estado) REFERENCES dimension.estado (id_estado);
-
+alter table hechos.pedido alter column id_tienda drop not null;*/
 
 
 
@@ -232,12 +270,27 @@ insert into dimension.geografia(id_pais,pais,departamento,ciudad) values('CO','C
 insert into dimension.barrio(nombre) values('Valle de Lili');
 INSERT INTO dimension.tiempo SELECT * FROM dimension.tiempo2;
 insert into dimension.tienda(id_geografia,id_tiempo_fecha_creacion,nit,nombre,password,direccion,telefono) values(2,20200701,'900.317.814-5','unicentro','1234','Calle 11 Nº 34-78 Barrio La Aurora de Pasto','3104709828');
-insert into dimension.tienda(id_geografia,id_tiempo_fecha_creacion,nit,nombre,password,direccion,telefono) values(1,20200702,'777','centro comercial unico','1234','Salomia','3333333');
-insert into dimension.tienda(id_geografia,id_tiempo_fecha_creacion,nit,nombre,password,direccion,telefono) values(1,20200702,'888','centro comercial la 14','1234','Lili','44444');
+insert into dimension.tienda(id_geografia,id_tiempo_fecha_creacion,nit,nombre,password,direccion,telefono) values(1,20200702,'777','Plazolete Lili','1234','Calle 45 # 100 39','3333333');
+insert into dimension.estado(id_estado, descripcion) values(100, 'PENDIENTE');
+insert into dimension.estado(id_estado, descripcion) values(101, 'ACEPTADO');
+insert into dimension.estado(id_estado, descripcion) values(102, 'RECHAZADO');
+insert into dimension.estado(id_estado, descripcion) values(103, 'ACTIVO');
+insert into dimension.estado(id_estado, descripcion) values(104, 'INACTIVO');
+insert into dimension.empresa(id_empresa, id_geografia, tipo, nit, nombre, id_estado) values(100, 1, 'F', '1010', 'Coca Cola', 103);
+insert into dimension.empresa(id_empresa, id_geografia, tipo, nit, nombre, id_estado) values(101, 1, 'F', '1010', 'Corner Burger', 103);
+insert into dimension.empresa(id_empresa, id_geografia, tipo, nit, nombre, id_estado) values(102, 1, 'F', '1010', 'Cheers', 103);
+
+insert into dimension.producto(id_producto, id_empresa, id_catalogo, categoria_nivel1, categoria_nivel2, ean, nombre, nivel, precio, id_estado) values(100, 100, 100, 'Bebidas', 'Gaseosas', 'ean-cocacola', 'Coca Cola', 2, 1500, 103);
+insert into dimension.producto(id_producto, id_empresa, id_catalogo, categoria_nivel1, ean, nombre, nivel, precio, id_estado) values(101, 101, 100, 'Hamburguesas', 'ean-callejera', 'Callejera', 1, 12000, 103);
+insert into dimension.producto(id_producto, id_empresa, id_catalogo, categoria_nivel1, categoria_nivel2, ean, nombre, nivel, precio, id_estado) values(102, 102, 100, 'Pizzas', 'Tradicional', 'ean-vegetariana', 'Vegana', 2, 21500, 103);
 
 
 
 
+
+
+
+select * from dimension.empresa;
 
 select * from dimension.tienda;
 
@@ -247,23 +300,33 @@ select * from dimension.tiempo;
 
 select * from dimension.barrio;
 
+select * from dimension.estado;
+
+select * from dimension.producto;
+
 select * from dimension.cliente order by 1;
 
 select * from hechos.visita order by 2;
 
 
-select * 
-from dimension.cliente c, hechos.visita v
-where c.id_cliente = v.id_cliente
---and c.cedula = '2'
---and v.id_tienda = 2
---and c.cedula = '13072207'
-order by 1
+select * from dimension.pedido;
+
+select * from hechos.venta;
+
+
+
+select v.id_venta, p.id_pedido, t.nombre tienda, pro.nombre producto, v.cantidad, v.valor, c.nombre cliente, p.fecha_pedido, e.descripcion estado
+from hechos.venta v 
+inner join dimension.pedido p on p.id_pedido = v.id_pedido
+inner join dimension.producto pro on pro.id_producto = v.id_producto
+inner join dimension.cliente c on c.id_cliente = v.id_cliente
+left outer join dimension.tienda t on t.id_tienda = p.id_tienda
+inner join dimension.estado e on e.id_estado = p.id_estado
 ;
 
 
 delete from hechos.visita;-- where id_cliente = 3;
-delete from dimension.cliente where id_cliente <> 22;
+delete from dimension.cliente;-- where id_cliente <> 22;
 
 
 

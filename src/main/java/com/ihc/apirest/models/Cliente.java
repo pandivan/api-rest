@@ -40,7 +40,6 @@ public class Cliente
 	private String tipoCliente;
 	private String password;
 	private String barrio;
-	private String perfil;
 
 	@OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
     private List<Visita> lstVisitas;

@@ -26,6 +26,7 @@ public class Producto
 	private Long idProducto;
 	private Long idEmpresa;
 	private Long idCatalogo;
+	private Long idEstado;
 	private String categoriaNivel1;
 	private String categoriaNivel2;
 	private String categoriaNivel3;
@@ -35,5 +36,4 @@ public class Producto
 	private String nombre;
 	private int nivel;
 	private Double precio;
-	private int estado;
 }
