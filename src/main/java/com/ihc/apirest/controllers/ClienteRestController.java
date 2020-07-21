@@ -1,7 +1,6 @@
 package com.ihc.apirest.controllers;
 
 import com.ihc.apirest.models.Cliente;
-import com.ihc.apirest.models.Visita;
 import com.ihc.apirest.repository.ClienteRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,14 +87,14 @@ public class ClienteRestController
         {
             Cliente cliente = clienteRepository.findByCedula(cedula);
 
-            if(null != cliente)
-            {
-                //Se suprime el objeto cliente de la vista ya que al devolver la entidad cliente por apirest no soporta las referencias ciclicas
-                for (Visita visita : cliente.getLstVisitas())
-                {
-                    visita.setCliente(null);
-                }
-            }
+            // if(null != cliente)
+            // {
+            //     //Se suprime el objeto cliente de la vista ya que al devolver la entidad cliente por apirest no soporta las referencias ciclicas
+            //     for (Visita visita : cliente.getLstVisitas())
+            //     {
+            //         visita.setCliente(null);
+            //     }
+            // }
             
             return new ResponseEntity<Cliente>(cliente, HttpStatus.OK);
         }

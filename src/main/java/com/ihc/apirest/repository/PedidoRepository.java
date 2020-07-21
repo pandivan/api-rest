@@ -3,20 +3,18 @@ package com.ihc.apirest.repository;
 import com.ihc.apirest.models.Pedido;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 
 
 @Repository
 public interface PedidoRepository extends JpaRepository<Pedido, Long>
 {
-    // @Query("select c from Cliente c where (c.telefono = ?1 or c.email = ?2) and c.password = ?3")
-    // Cliente validarCliente(String telefono, String email, String password);
-
-    // // @Query("select c from Cliente c inner join c.lstVisitas v where c.cedula = ?1 and v.idTienda = ?2")
-    // // Cliente validarClienteByCedulaAndIdTienda(String cedula, Long idTienda);
-
-    // Cliente findByCedula(String cedula);
-
-    // Cliente findByEmail(String email);
+    @Transactional
+    @Modifying
+    @Query("update Pedido p SET p.idTienda = ?1, p.idEstado = ?2 where p.idPedido = ?3")
+    void actualizarPedido(Long idTienda, Long idEstado, Long idPedido);
 }

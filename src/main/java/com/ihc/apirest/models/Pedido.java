@@ -12,6 +12,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -22,7 +24,7 @@ import javax.persistence.Table;
 @NoArgsConstructor
 @ToString
 @Entity
-@Table(schema="dimension")
+@Table(schema="hechos")
 public class Pedido
 {
     @Id
@@ -31,6 +33,10 @@ public class Pedido
 	private Long idTienda;
 	private Long idEstado;
 
+	@JoinColumn(name = "idCliente")
+    @ManyToOne(optional = false)
+	private Cliente cliente;
+
 	@OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
-    private List<Venta> lstVentas;
+	private List<ProductoPedido> lstProductosPedido;
 }

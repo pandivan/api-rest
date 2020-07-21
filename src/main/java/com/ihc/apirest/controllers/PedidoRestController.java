@@ -1,7 +1,7 @@
 package com.ihc.apirest.controllers;
 
 import com.ihc.apirest.models.Pedido;
-import com.ihc.apirest.models.Venta;
+import com.ihc.apirest.models.ProductoPedido;
 import com.ihc.apirest.repository.PedidoRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +35,9 @@ public class PedidoRestController
     {
         try 
         {
-            for (Venta venta : pedido.getLstVentas()) 
+            for (ProductoPedido productoPedido : pedido.getLstProductosPedido()) 
             {
-                venta.setPedido(pedido);    
+                productoPedido.setPedido(pedido);    
             }
 
             //Este metodo creará una pedido en BD
@@ -63,7 +63,7 @@ public class PedidoRestController
         try 
         {
             //Este metodo creará un usuario en BD.
-            pedidoRepository.save(pedido);
+            pedidoRepository.actualizarPedido(pedido.getIdTienda(), pedido.getIdEstado(), pedido.getIdPedido());
             
             return new ResponseEntity<Boolean>(true, HttpStatus.CREATED);
 		} 

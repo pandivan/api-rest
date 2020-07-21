@@ -9,9 +9,9 @@ drop SCHEMA hechos;
 
 */
 
-drop table hechos.venta;
 drop table hechos.visita;
-drop table dimension.pedido;
+drop table dimension.producto_pedido;
+drop table hechos.pedido;
 drop table dimension.tienda;
 drop table dimension.producto;
 drop table dimension.cliente;
@@ -20,6 +20,7 @@ drop table dimension.empresa;
 drop table dimension.geografia;
 drop table dimension.tiempo;
 drop table dimension.estado;
+
 
 
 
@@ -134,6 +135,8 @@ ean varchar(100) not null,
 nombre varchar(100) not null,
 nivel smallint not null,
 precio numeric(8,2) null,
+url_imagen_categoria varchar(4000) null,
+url_imagen_producto varchar(4000) null,
 id_estado bigserial not null,
 primary key (id_producto)
 );
@@ -182,64 +185,41 @@ alter table dimension.cliente alter column id_barrio drop not null;
 
 
 
-create table dimension.pedido
+create table hechos.pedido
 (
 id_pedido bigserial not null,
 id_tienda bigserial not null,
+id_cliente bigserial not null,
 id_estado bigserial not null,
 fecha_pedido TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP not null,
+id_tiempo integer DEFAULT cast(to_char(now(), 'YYYYMMDD') as integer) not null,
 primary key (id_pedido)
 );
-
-ALTER TABLE dimension.pedido ADD CONSTRAINT pedido_tienda_fk FOREIGN KEY (id_tienda) REFERENCES dimension.tienda (id_tienda);
-ALTER TABLE dimension.pedido ADD CONSTRAINT pedido_estado_fk FOREIGN KEY (id_estado) REFERENCES dimension.estado (id_estado);
-alter table dimension.pedido alter column id_tienda drop not null;
-
-
-
-create table hechos.venta
-(
-id_venta bigserial not null,
-id_pedido bigserial not null,
-id_producto bigserial not null,
-id_cliente bigserial not null,
-id_tiempo integer DEFAULT cast(to_char(now(), 'YYYYMMDD') as integer) not null,
-cantidad smallint not null,
-valor numeric(8,2) not null,
-primary key (id_venta)
-);
-
-ALTER TABLE hechos.venta ADD CONSTRAINT venta_pedido_fk FOREIGN KEY (id_pedido) REFERENCES dimension.pedido (id_pedido);
-ALTER TABLE hechos.venta ADD CONSTRAINT venta_producto_fk FOREIGN KEY (id_producto) REFERENCES dimension.producto (id_producto);
-ALTER TABLE hechos.venta ADD CONSTRAINT venta_cliente_fk FOREIGN KEY (id_cliente) REFERENCES dimension.cliente (id_cliente);
-ALTER TABLE hechos.venta ADD CONSTRAINT venta_tiempo_fk FOREIGN KEY (id_tiempo) REFERENCES dimension.tiempo (id_tiempo);
-
-
-
-
-
-/*
-create table hechos.venta
-(
-id_pedido bigserial not null,
-id_tienda bigserial not null,
-id_producto bigserial not null,
-id_cliente bigserial not null,
-id_tiempo integer DEFAULT cast(to_char(now(), 'YYYYMMDD') as integer) not null,
-id_estado bigserial not null,
-cantidad smallint not null,
-valor numeric(8,2) not null,
-fecha_pedido TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP not null,
-primary key (id_pedido)
-);
-
 
 ALTER TABLE hechos.pedido ADD CONSTRAINT pedido_tienda_fk FOREIGN KEY (id_tienda) REFERENCES dimension.tienda (id_tienda);
-ALTER TABLE hechos.pedido ADD CONSTRAINT pedido_producto_fk FOREIGN KEY (id_producto) REFERENCES dimension.producto (id_producto);
 ALTER TABLE hechos.pedido ADD CONSTRAINT pedido_cliente_fk FOREIGN KEY (id_cliente) REFERENCES dimension.cliente (id_cliente);
-ALTER TABLE hechos.pedido ADD CONSTRAINT pedido_tiempo_fk FOREIGN KEY (id_tiempo) REFERENCES dimension.tiempo (id_tiempo);
 ALTER TABLE hechos.pedido ADD CONSTRAINT pedido_estado_fk FOREIGN KEY (id_estado) REFERENCES dimension.estado (id_estado);
-alter table hechos.pedido alter column id_tienda drop not null;*/
+ALTER TABLE hechos.pedido ADD CONSTRAINT pedido_tiempo_fk FOREIGN KEY (id_tiempo) REFERENCES dimension.tiempo (id_tiempo);
+alter table hechos.pedido alter column id_tienda drop not null;
+
+
+
+create table dimension.producto_pedido
+(
+id_producto_pedido bigserial not null,
+id_pedido bigserial not null,
+id_producto bigserial not null,
+cantidad smallint not null,
+valor numeric(8,2) not null,
+primary key (id_producto_pedido)
+);
+
+ALTER TABLE dimension.producto_pedido ADD CONSTRAINT productopedido_pedido_fk FOREIGN KEY (id_pedido) REFERENCES hechos.pedido (id_pedido);
+ALTER TABLE dimension.producto_pedido ADD CONSTRAINT productopedido_producto_fk FOREIGN KEY (id_producto) REFERENCES dimension.producto (id_producto);
+
+
+
+
 
 
 
@@ -280,9 +260,55 @@ insert into dimension.empresa(id_empresa, id_geografia, tipo, nit, nombre, id_es
 insert into dimension.empresa(id_empresa, id_geografia, tipo, nit, nombre, id_estado) values(101, 1, 'F', '1010', 'Corner Burger', 103);
 insert into dimension.empresa(id_empresa, id_geografia, tipo, nit, nombre, id_estado) values(102, 1, 'F', '1010', 'Cheers', 103);
 
-insert into dimension.producto(id_producto, id_empresa, id_catalogo, categoria_nivel1, categoria_nivel2, ean, nombre, nivel, precio, id_estado) values(100, 100, 100, 'Bebidas', 'Gaseosas', 'ean-cocacola', 'Coca Cola', 2, 1500, 103);
-insert into dimension.producto(id_producto, id_empresa, id_catalogo, categoria_nivel1, ean, nombre, nivel, precio, id_estado) values(101, 101, 100, 'Hamburguesas', 'ean-callejera', 'Callejera', 1, 12000, 103);
-insert into dimension.producto(id_producto, id_empresa, id_catalogo, categoria_nivel1, categoria_nivel2, ean, nombre, nivel, precio, id_estado) values(102, 102, 100, 'Pizzas', 'Tradicional', 'ean-vegetariana', 'Vegana', 2, 21500, 103);
+
+insert into dimension.producto(id_producto, id_empresa, id_catalogo, categoria_nivel1, ean, nombre, nivel, precio, url_imagen_categoria, url_imagen_producto, id_estado) values(100, 101, 100, 'American', 'ean-Beef Grill', 'Beef Grill', 1, 24, 'http://tutofox.com/foodapp//categories/american.png', 'http://tutofox.com/foodapp//food/american/beef-grill.png', 103);
+
+insert into dimension.producto(id_producto, id_empresa, id_catalogo, categoria_nivel1, ean, nombre, nivel, precio, url_imagen_categoria, url_imagen_producto, id_estado) values(101, 101, 100, 'American', 'ean-Chicken Picatta', 'Chicken Picatta', 1, 20, 'http://tutofox.com/foodapp//categories/american.png', 'http://tutofox.com/foodapp//food/american/chicken-piccata.png', 103);
+
+insert into dimension.producto(id_producto, id_empresa, id_catalogo, categoria_nivel1, ean, nombre, nivel, precio, url_imagen_categoria, url_imagen_producto, id_estado) values(102, 101, 100, 'American', 'ean-Chicken Romesco', 'Chicken Romesco', 1, 21, 'http://tutofox.com/foodapp//categories/american.png', 'http://tutofox.com/foodapp//food/american/chicken-romesco.png', 103);
+
+insert into dimension.producto(id_producto, id_empresa, id_catalogo, categoria_nivel1, ean, nombre, nivel, precio, url_imagen_categoria, url_imagen_producto, id_estado) values(103, 101, 100, 'American', 'ean-Chicken Grill', 'Chicken Grill', 1, 22, 'http://tutofox.com/foodapp//categories/american.png', 'http://tutofox.com/foodapp//food/american/chicken-grill.png', 103);
+
+insert into dimension.producto(id_producto, id_empresa, id_catalogo, categoria_nivel1, ean, nombre, nivel, precio, url_imagen_categoria, url_imagen_producto, id_estado) values(104, 101, 100, 'American', 'ean-Salmon Grill', 'Salmon Grill', 1, 26, 'http://tutofox.com/foodapp//categories/american.png', 'http://tutofox.com/foodapp//food/american/salmon-grill.png', 103);
+
+insert into dimension.producto(id_producto, id_empresa, id_catalogo, categoria_nivel1, ean, nombre, nivel, precio, url_imagen_categoria, url_imagen_producto, id_estado) values(105, 101, 100, 'American', 'ean-Salmon Romesco', 'Salmon Romesco', 1, 25, 'http://tutofox.com/foodapp//categories/american.png', 'http://tutofox.com/foodapp//food/american/salmon-romesco', 103);
+
+
+
+
+insert into dimension.producto(id_producto, id_empresa, id_catalogo, categoria_nivel1, ean, nombre, nivel, precio, url_imagen_categoria, url_imagen_producto, id_estado) values(106, 101, 100, 'Burger', 'ean-Burger Home', 'Burger Home', 1, 16, 'http://tutofox.com/foodapp//categories/burger.png', 'http://tutofox.com/foodapp//food/burger/burger-1.png', 103);
+
+insert into dimension.producto(id_producto, id_empresa, id_catalogo, categoria_nivel1, ean, nombre, nivel, precio, url_imagen_categoria, url_imagen_producto, id_estado) values(107, 101, 100, 'Burger', 'ean-MegaBurger', 'MegaBurger', 1, 16, 'http://tutofox.com/foodapp//categories/burger.png', 'http://tutofox.com/foodapp//food/burger/burger-2.png', 103);
+
+insert into dimension.producto(id_producto, id_empresa, id_catalogo, categoria_nivel1, ean, nombre, nivel, precio, url_imagen_categoria, url_imagen_producto, id_estado) values(108, 101, 100, 'Burger', 'ean-Burger Special', 'Burger Special', 1, 17, 'http://tutofox.com/foodapp//categories/burger.png', 'http://tutofox.com/foodapp//food/burger/burger-3.png', 103);
+
+insert into dimension.producto(id_producto, id_empresa, id_catalogo, categoria_nivel1, ean, nombre, nivel, precio, url_imagen_categoria, url_imagen_producto, id_estado) values(109, 101, 100, 'Burger', 'ean-Burger Cheese', 'Burger Cheese', 1, 18, 'http://tutofox.com/foodapp//categories/burger.png', 'http://tutofox.com/foodapp//food/burger/burger-4.png', 103);
+
+insert into dimension.producto(id_producto, id_empresa, id_catalogo, categoria_nivel1, ean, nombre, nivel, precio, url_imagen_categoria, url_imagen_producto, id_estado) values(110, 101, 100, 'Burger', 'ean-Burger Farmer', 'Burger Farmer', 1, 19, 'http://tutofox.com/foodapp//categories/burger.png', 'http://tutofox.com/foodapp//food/burger/burger-5.png', 103);
+
+insert into dimension.producto(id_producto, id_empresa, id_catalogo, categoria_nivel1, ean, nombre, nivel, precio, url_imagen_categoria, url_imagen_producto, id_estado) values(111, 101, 100, 'Burger', 'ean-Mini Burger', 'Mini Burger', 1, 10, 'http://tutofox.com/foodapp//categories/burger.png', 'http://tutofox.com/foodapp//food/burger/burger-6.png', 103);
+
+
+insert into dimension.producto(id_producto, id_empresa, id_catalogo, categoria_nivel1, ean, nombre, nivel, precio, url_imagen_categoria, url_imagen_producto, id_estado) values(112, 101, 100, 'Pizza', 'ean-Pizza Vegan', 'Pizza Vegan', 1, 14, 'http://tutofox.com/foodapp//categories/pizza.png', 'http://tutofox.com/foodapp//food/pizza/pizza-1.png', 103);
+
+insert into dimension.producto(id_producto, id_empresa, id_catalogo, categoria_nivel1, ean, nombre, nivel, precio, url_imagen_categoria, url_imagen_producto, id_estado) values(113, 101, 100, 'Pizza', 'ean-Pizza Bufalisimo', 'Pizza Bufalisimo', 1, 15, 'http://tutofox.com/foodapp//categories/pizza.png', 'http://tutofox.com/foodapp//food/pizza/pizza-2.png', 103);
+
+insert into dimension.producto(id_producto, id_empresa, id_catalogo, categoria_nivel1, ean, nombre, nivel, precio, url_imagen_categoria, url_imagen_producto, id_estado) values(114, 101, 100, 'Pizza', 'ean-Pizza Haiwaiana', 'Pizza Haiwaiana', 1, 16, 'http://tutofox.com/foodapp//categories/pizza.png', 'http://tutofox.com/foodapp//food/pizza/pizza-3.png', 103);
+
+insert into dimension.producto(id_producto, id_empresa, id_catalogo, categoria_nivel1, ean, nombre, nivel, precio, url_imagen_categoria, url_imagen_producto, id_estado) values(115, 101, 100, 'Pizza', 'ean-Pizza Peperoni', 'Pizza Peperoni', 1, 17, 'http://tutofox.com/foodapp//categories/pizza.png', 'http://tutofox.com/foodapp//food/pizza/pizza-4.png', 103);
+
+insert into dimension.producto(id_producto, id_empresa, id_catalogo, categoria_nivel1, ean, nombre, nivel, precio, url_imagen_categoria, url_imagen_producto, id_estado) values(116, 101, 100, 'Pizza', 'ean-Pizza Vegan 2', 'Pizza Vegan 2', 1, 33, 'http://tutofox.com/foodapp//categories/pizza.png', 'http://tutofox.com/foodapp//food/pizza/pizza-5.png', 103);
+
+insert into dimension.producto(id_producto, id_empresa, id_catalogo, categoria_nivel1, ean, nombre, nivel, precio, url_imagen_categoria, url_imagen_producto, id_estado) values(117, 101, 100, 'Pizza', 'ean-Pizza Napolitana', 'Pizza Napolitana', 1, 30, 'http://tutofox.com/foodapp//categories/pizza.png', 'http://tutofox.com/foodapp//food/pizza/pizza-6.png', 103);
+
+
+insert into dimension.producto(id_producto, id_empresa, id_catalogo, categoria_nivel1, ean, nombre, nivel, precio, url_imagen_categoria, url_imagen_producto, id_estado) values(118, 101, 100, 'Drink', 'ean-Coca cola', 'Coca cola', 1, 30, 'http://tutofox.com/foodapp//categories/drink.png', 'http://tutofox.com/foodapp//food/drink/cocacola.png', 103);
+
+insert into dimension.producto(id_producto, id_empresa, id_catalogo, categoria_nivel1, ean, nombre, nivel, precio, url_imagen_categoria, url_imagen_producto, id_estado) values(119, 101, 100, 'Drink', 'ean-Pepsi', 'Pepsi', 1, 30, 'http://tutofox.com/foodapp//categories/drink.png', 'http://tutofox.com/foodapp//food/drink/pepsi.png', 103);
+
+insert into dimension.producto(id_producto, id_empresa, id_catalogo, categoria_nivel1, ean, nombre, nivel, precio, url_imagen_categoria, url_imagen_producto, id_estado) values(120, 101, 100, 'Drink', 'ean-Quatro', 'Quatro', 1, 30, 'http://tutofox.com/foodapp//categories/drink.png', 'http://tutofox.com/foodapp//food/drink/quatro.png', 103);
+
+insert into dimension.producto(id_producto, id_empresa, id_catalogo, categoria_nivel1, ean, nombre, nivel, precio, url_imagen_categoria, url_imagen_producto, id_estado) values(121, 101, 100, 'Drink', 'ean-Sprite', 'Sprite', 1, 30, 'http://tutofox.com/foodapp//categories/drink.png', 'http://tutofox.com/foodapp//food/drink/sprite.png', 103);
 
 
 
@@ -309,20 +335,33 @@ select * from dimension.cliente order by 1;
 select * from hechos.visita order by 2;
 
 
-select * from dimension.pedido;
+update hechos.pedido set id_tienda = null, id_estado = 100;
 
-select * from hechos.venta;
+select * from hechos.pedido;
+
+select * from dimension.producto_pedido;
 
 
 
-select v.id_venta, p.id_pedido, t.nombre tienda, pro.nombre producto, v.cantidad, v.valor, c.nombre cliente, p.fecha_pedido, e.descripcion estado
-from hechos.venta v 
-inner join dimension.pedido p on p.id_pedido = v.id_pedido
-inner join dimension.producto pro on pro.id_producto = v.id_producto
-inner join dimension.cliente c on c.id_cliente = v.id_cliente
+select p.id_pedido, t.nombre tienda, pro.nombre producto, pp.cantidad, pp.valor, c.nombre cliente, p.fecha_pedido, e.descripcion estado
+from hechos.pedido p 
+inner join dimension.producto_pedido pp on pp.id_pedido = p.id_pedido
+inner join dimension.producto pro on pro.id_producto = pp.id_producto
+inner join dimension.cliente c on c.id_cliente = p.id_cliente
 left outer join dimension.tienda t on t.id_tienda = p.id_tienda
 inner join dimension.estado e on e.id_estado = p.id_estado
+where 1=1
+and p.id_tienda is null
+--and p.id_pedido = 14
 ;
+
+
+
+
+select id_producto, categoria_nivel1, nombre, precio, url_imagen_categoria, url_imagen_producto 
+from dimension.producto
+;
+
 
 
 delete from hechos.visita;-- where id_cliente = 3;

@@ -10,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 
 
@@ -36,4 +37,11 @@ public class Producto
 	private String nombre;
 	private int nivel;
 	private Double precio;
+	private String urlImagenCategoria;
+	private String urlImagenProducto;
+
+	@Transient
+	private int cantidad;
+	@Transient
+	private boolean isSeleccionado;
 }
