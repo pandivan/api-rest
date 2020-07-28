@@ -15,6 +15,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 
 
@@ -26,7 +27,7 @@ import javax.persistence.Table;
 @Table(schema="dimension")
 public class Cliente
 {
-    @Id
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long idCliente;
 	private Long idBarrio;
@@ -42,5 +43,16 @@ public class Cliente
 	private String barrio;
 
 	@OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
-    private List<Visita> lstVisitas;
+	private List<Visita> lstVisitas;
+	
+	@Transient
+	private boolean tendero;
+
+
+	public Cliente(Long idCliente, String nombre, boolean tendero) 
+	{
+		// this.idCliente = idCliente;
+		// this.nombre = nombre;
+		// this.isTendero = isTendero;
+	}
 }

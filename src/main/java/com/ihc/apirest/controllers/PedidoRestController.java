@@ -35,6 +35,8 @@ public class PedidoRestController
     {
         try 
         {
+            //Se hace un set de pedido en todos los productos, ya que javascript no adminte estructuras ciclicas en el caso de [ProductoPedido] que contiene a [Pedido] 
+            //y este a su vez contiene a [ProductoPedido], lo cual imposibilita enviar un entity de [Pedido] desde la App
             for (ProductoPedido productoPedido : pedido.getLstProductosPedido()) 
             {
                 productoPedido.setPedido(pedido);    

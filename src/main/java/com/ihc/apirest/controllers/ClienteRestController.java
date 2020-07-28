@@ -1,7 +1,9 @@
 package com.ihc.apirest.controllers;
 
 import com.ihc.apirest.models.Cliente;
+import com.ihc.apirest.models.Tienda;
 import com.ihc.apirest.repository.ClienteRepository;
+import com.ihc.apirest.repository.TiendaRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,6 +25,9 @@ public class ClienteRestController
 {
     @Autowired
     ClienteRepository clienteRepository;
+
+    @Autowired
+    TiendaRepository tiendaRepository;
     
 
 
@@ -169,7 +174,18 @@ public class ClienteRestController
     {
         try
         {
-            Cliente clienteBD = clienteRepository.validarCliente(cliente.getTelefono(), cliente.getEmail(), cliente.getPassword());
+            Cliente clienteBD = null;
+
+            if(cliente.isTendero())
+            {
+                Tienda clienteTienda = tiendaRepository.validarTienda(cliente.getTelefono(), cliente.getEmail(), cliente.getPassword());
+                clienteBD = new Cliente(clienteTienda.getIdTienda(), clienteTienda.getNombre(), cliente.isTendero());
+            }
+            else
+            {
+                clienteBD = clienteRepository.validarCliente(cliente.getTelefono(), cliente.getEmail(), cliente.getPassword());
+            }
+            
 
             return new ResponseEntity<Cliente>(clienteBD, HttpStatus.OK);
         }

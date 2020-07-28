@@ -36,7 +36,7 @@ public class Producto
 	private String ean;
 	private String nombre;
 	private int nivel;
-	private Double precio;
+	private Double valor;
 	private String urlImagenCategoria;
 	private String urlImagenProducto;
 

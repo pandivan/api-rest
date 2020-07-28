@@ -30,4 +30,5 @@ public class Tienda
 	private String password;
 	private String direccion;
 	private String telefono;
+	private String email;
 }

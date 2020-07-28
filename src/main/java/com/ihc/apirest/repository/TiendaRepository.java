@@ -11,6 +11,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TiendaRepository extends JpaRepository<Tienda, Long>
 {   
-    @Query("select t from Tienda t where (t.telefono = ?1 or t.nit = ?2) and t.password = ?3")
+    @Query("select t from Tienda t where (t.telefono = ?1 or t.email = ?2) and t.password = ?3")
     Tienda validarTienda(String telefono, String nit, String password);
 }

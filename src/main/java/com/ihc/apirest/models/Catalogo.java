@@ -13,11 +13,8 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class Categoria
+public class Catalogo
 {
-	private String idCategoria;
-	private String nombre;
-	private String urlImagenCategoria;
-	private String color;
+	private List<Categoria> lstCategorias;
 	private List<Producto> lstProductos;
 }
