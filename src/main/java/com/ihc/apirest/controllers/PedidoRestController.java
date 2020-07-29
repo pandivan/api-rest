@@ -1,5 +1,7 @@
 package com.ihc.apirest.controllers;
 
+import java.util.List;
+
 import com.ihc.apirest.models.Pedido;
 import com.ihc.apirest.models.ProductoPedido;
 import com.ihc.apirest.repository.PedidoRepository;
@@ -26,18 +28,18 @@ public class PedidoRestController
 
 
     /**
-     * Método que permite crear una nueva pedido en BD
+     * Método que permite crear un nuevo pedido en BD
      * @param pedido, Pedido a crear
-     * @return Pedido creada
+     * @return Pedido creado
      */
     @PostMapping(value="/pedido")
-    public ResponseEntity<Boolean> crearPedido(@RequestBody Pedido pedido)
+    public ResponseEntity<Boolean> crearPedido(@RequestBody final Pedido pedido)
     {
         try 
         {
             //Se hace un set de pedido en todos los productos, ya que javascript no adminte estructuras ciclicas en el caso de [ProductoPedido] que contiene a [Pedido] 
             //y este a su vez contiene a [ProductoPedido], lo cual imposibilita enviar un entity de [Pedido] desde la App
-            for (ProductoPedido productoPedido : pedido.getLstProductosPedido()) 
+            for (final ProductoPedido productoPedido : pedido.getLstProductosPedido()) 
             {
                 productoPedido.setPedido(pedido);    
             }
@@ -47,7 +49,7 @@ public class PedidoRestController
 
             return new ResponseEntity<Boolean>(true, HttpStatus.CREATED);
 		} 
-        catch (Exception e) 
+        catch (final Exception e) 
         {
             return new ResponseEntity<Boolean>(false, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -57,10 +59,10 @@ public class PedidoRestController
      /**
      * Método que permite actualizar una pedido en BD
      * @param pedido, Pedido actualizar
-     * @return Pedido actualizada
+     * @return Pedido actualizado
      */
     @PutMapping("/pedido")
-    public ResponseEntity<Boolean> actualizarPedido(@RequestBody Pedido pedido)
+    public ResponseEntity<Boolean> actualizarPedido(@RequestBody final Pedido pedido)
     {
         try 
         {
@@ -69,7 +71,7 @@ public class PedidoRestController
             
             return new ResponseEntity<Boolean>(true, HttpStatus.CREATED);
 		} 
-        catch (Exception e) 
+        catch (final Exception e) 
         {
             return new ResponseEntity<Boolean>(false, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -77,23 +79,46 @@ public class PedidoRestController
 	
     
 
+    // /**
+    //  * Método que permite obtener un pedido según su Id
+    //  * @param idPedido, Id Pedido con el cual se buscara el pedido en BD
+    //  * @return Pedido encontrado
+    //  */
+    // @GetMapping(value = "/pedido/{idPedido}")
+    // public ResponseEntity<Pedido> findByPedido(@PathVariable Long idPedido) 
+    // {
+    //     try
+    //     {
+    //         Pedido pedido = pedidoRepository.findById(idPedido).get();
+
+    //         return new ResponseEntity<Pedido>(pedido, HttpStatus.OK);
+    //     }
+    //     catch (Exception e) 
+    //     {
+	// 		return new ResponseEntity<Pedido>(HttpStatus.INTERNAL_SERVER_ERROR);
+    //     }
+    // }
+
+
+
     /**
-     * Método que permite obtener un pedido según su Id
-     * @param idPedido, Id Pedido con el cual se buscara el pedido en BD
-     * @return Pedido encontrado
+     * Método que permite obtener todos los pedidos activos
+     * @return Listado de pedidos activos
      */
-    @GetMapping(value = "/pedido/{idPedido}")
-    public ResponseEntity<Pedido> findByPedido(@PathVariable Long idPedido) 
+    @GetMapping(value = "/pedido")
+    public ResponseEntity<List<Pedido>> getAllPedidos() 
     {
         try
         {
-            Pedido pedido = pedidoRepository.findById(idPedido).get();
+            Long idEstadoPendiente = (long) 100;
+            
+            List<Pedido> lstPedidos = pedidoRepository.findByIdEstado(idEstadoPendiente);
 
-            return new ResponseEntity<Pedido>(pedido, HttpStatus.OK);
+            return new ResponseEntity<List<Pedido>>(lstPedidos, HttpStatus.OK);
         }
-        catch (Exception e) 
+        catch (final Exception e) 
         {
-			return new ResponseEntity<Pedido>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<List<Pedido>>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

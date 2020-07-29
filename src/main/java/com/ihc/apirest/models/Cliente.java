@@ -51,8 +51,8 @@ public class Cliente
 
 	public Cliente(Long idCliente, String nombre, boolean tendero) 
 	{
-		// this.idCliente = idCliente;
-		// this.nombre = nombre;
-		// this.isTendero = isTendero;
+		this.idCliente = idCliente;
+		this.nombre = nombre;
+		this.tendero = tendero;
 	}
 }

@@ -336,7 +336,7 @@ select * from dimension.cliente order by 1;
 select * from hechos.visita order by 2;
 
 
-update hechos.pedido set id_tienda = null, id_estado = 100;
+update hechos.pedido set id_tienda = null, id_estado = 100 where id_pedido  = 1;
 
 select * from hechos.pedido;
 
