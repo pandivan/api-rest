@@ -253,9 +253,10 @@ insert into dimension.tienda(id_geografia,id_tiempo_fecha_creacion,nit,nombre,pa
 insert into dimension.tienda(id_geografia,id_tiempo_fecha_creacion,nit,nombre,password,direccion,telefono, email) values(1,20200702,'777','Plazolete Lili','1234','Calle 45 # 100 39','3333333', 'plazoleta@gmail.com');
 insert into dimension.estado(id_estado, descripcion) values(100, 'PENDIENTE');
 insert into dimension.estado(id_estado, descripcion) values(101, 'ACEPTADO');
-insert into dimension.estado(id_estado, descripcion) values(102, 'RECHAZADO');
+insert into dimension.estado(id_estado, descripcion) values(102, 'CANCELADO');
 insert into dimension.estado(id_estado, descripcion) values(103, 'ACTIVO');
 insert into dimension.estado(id_estado, descripcion) values(104, 'INACTIVO');
+insert into dimension.estado(id_estado, descripcion) values(105, 'DESPACHADO');
 insert into dimension.empresa(id_empresa, id_geografia, tipo, nit, nombre, id_estado) values(100, 1, 'F', '1010', 'Coca Cola', 103);
 insert into dimension.empresa(id_empresa, id_geografia, tipo, nit, nombre, id_estado) values(101, 1, 'F', '1010', 'Corner Burger', 103);
 insert into dimension.empresa(id_empresa, id_geografia, tipo, nit, nombre, id_estado) values(102, 1, 'F', '1010', 'Cheers', 103);
@@ -336,15 +337,23 @@ select * from dimension.cliente order by 1;
 select * from hechos.visita order by 2;
 
 
-update hechos.pedido set id_tienda = null, id_estado = 100 where id_pedido  = 1;
+update hechos.pedido set id_tienda = null, id_estado = 100 where id_pedido in (1,2);
+
+update hechos.pedido set id_tienda = 1, id_estado = 101 where id_pedido in (1,2);
+
+update hechos.pedido set id_estado = 101 where id_pedido in (1,2);
 
 select * from hechos.pedido;
 
 select * from dimension.producto_pedido;
 
+select pedido0_.id_pedido as id_pedid1_5_, pedido0_.id_cliente as id_clien4_5_, pedido0_.id_estado as id_estad2_5_, pedido0_.id_tienda as id_tiend3_5_ from hechos.pedido pedido0_ where pedido0_.id_estado=100;
+
+select pedido0_.id_pedido as id_pedid1_5_, pedido0_.id_cliente as id_clien4_5_, pedido0_.id_estado as id_estad2_5_, pedido0_.id_tienda as id_tiend3_5_ from hechos.pedido pedido0_ where pedido0_.id_tienda=2 and pedido0_.id_estado=101;
 
 
-select p.id_pedido, t.nombre tienda, pro.nombre producto, pp.cantidad, pp.valor, c.nombre cliente, p.fecha_pedido, e.descripcion estado
+
+select p.id_pedido, t.nombre tienda, pro.nombre producto, pp.cantidad, pp.valor, c.nombre cliente, p.fecha_pedido, e.descripcion estado, e.id_estado 
 from hechos.pedido p 
 inner join dimension.producto_pedido pp on pp.id_pedido = p.id_pedido
 inner join dimension.producto pro on pro.id_producto = pp.id_producto
@@ -355,7 +364,6 @@ where 1=1
 --and p.id_tienda is null
 --and p.id_pedido = 14
 ;
-
 
 
 
@@ -378,6 +386,17 @@ delete from dimension.cliente;-- where id_cliente <> 22;
 
 --create table dimension.tiempo2 as (select * from dimension.tiempo);
 --create table dimension.cliente2 as (select * from dimension.cliente);
+
+
+--nextval('dimeid_clientension.cliente_id_cliente_seq'::regclass)
+
+--select nextval('dimension.cliente_id_cliente_seq');
+
+--SELECT * FROM pg_class c WHERE c.relkind = 'S';
+
+
+
+
 
 
 */

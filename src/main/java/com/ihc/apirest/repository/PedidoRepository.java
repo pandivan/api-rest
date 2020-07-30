@@ -28,9 +28,41 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long>
 
 
     /**
-     * Método que permite obtener todos los pedidos con estado pendiente
-     * @param idEstado Estado pendiente
-     * @return Listado de pedidos pendientes
+     * Método que permite actualizar el pedido
+     * @param idTienda Id de la tienda que tomo el pedido
+     * @param idEstado Id del estado Aceptado
+     * @param idPedido Id del pedido
+     */
+    @Transactional
+    @Modifying
+    @Query("update Pedido p SET p.idEstado = ?1 where p.idPedido = ?2")
+    void actualizarEstadoPedido(Long idEstado, Long idPedido);
+
+
+    /**
+     * Método que permite obtener un pedido según su estado
+     * @param idEstado Id estado del pedido
+     * @param idPedido Id del pedido
+     * @return Pedido
+     */
+    @Query("select p.idPedido from Pedido p where p.idPedido = ?1 and p.idEstado = ?2")
+    Long findByIdPedidoAndIdEstado(Long idPedido, Long idEstado);
+
+
+    /**
+     * Método que permite obtener todos los pedidos según su estado
+     * @param idEstado Id estado
+     * @return Listado de pedidos
      */
     List<Pedido> findByIdEstado(Long idEstado);
+
+
+
+    /**
+     * Método que permite obtener todos los pedidos de una tienda con estado "ACEPTADO"
+     * @param idTienda Id del tienda
+     * @param idEstado Id del estado
+     * @return Listado de pedidos aceptados
+     */
+    List<Pedido> findByIdTiendaAndIdEstado(Long idTienda, Long idEstado);
 }
