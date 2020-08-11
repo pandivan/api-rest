@@ -316,6 +316,13 @@ insert into dimension.producto(id_producto, id_empresa, id_catalogo, categoria_n
 commit;
 
 
+select * from dimension.cliente where barrio = '';
+
+select * from dimension.cliente where sexo = '' or sexo is null order by 1 desc;
+
+update dimension.cliente set sexo = 'F' where id_cliente in(2783,2776,2648);
+
+update dimension.cliente set sexo = 'M' where sexo = '';
 
 
 select * from dimension.empresa;
@@ -332,7 +339,7 @@ select * from dimension.estado;
 
 select * from dimension.producto;
 
-select * from dimension.cliente order by 1;
+select * from dimension.cliente order by 1 desc;
 
 select * from hechos.visita order by 2;
 
@@ -346,10 +353,6 @@ update hechos.pedido set id_estado = 101 where id_pedido in (1,2);
 select * from hechos.pedido;
 
 select * from dimension.producto_pedido;
-
-select pedido0_.id_pedido as id_pedid1_5_, pedido0_.id_cliente as id_clien4_5_, pedido0_.id_estado as id_estad2_5_, pedido0_.id_tienda as id_tiend3_5_ from hechos.pedido pedido0_ where pedido0_.id_estado=100;
-
-select pedido0_.id_pedido as id_pedid1_5_, pedido0_.id_cliente as id_clien4_5_, pedido0_.id_estado as id_estad2_5_, pedido0_.id_tienda as id_tiend3_5_ from hechos.pedido pedido0_ where pedido0_.id_tienda=2 and pedido0_.id_estado=101;
 
 
 
@@ -375,12 +378,30 @@ from dimension.producto
 
 
 
-select * from dimension.cliente order by 1;
+select count(1) from dimension.cliente c where c.id_tiempo_fecha_creacion = 20200811
+union all
+select count(1) from hechos.visita v where v.id_tiempo = 20200811;
 
-select * from hechos.visita v order by 1;
 
-delete from hechos.visita;-- where id_cliente = 3;
-delete from dimension.cliente;-- where id_cliente <> 22;
+
+SELECT * --table_name AS "Tabla", ROUND(((data_length + index_length) / 1024 / 1024), 2) AS "Tamaño (MB)"
+FROM information_schema.TABLES
+--WHERE table_schema in ("dimension", "hechos")
+--ORDER BY (data_length + index_length) DESC
+;  
+
+
+
+
+GRANT ALL PRIVILEGES ON DATABASE dbg8dhdal4qvec TO vrhygmcmqapxkw;
+
+SELECT
+pg_database.datname,
+pg_size_pretty(pg_database_size(pg_database.datname)) AS size
+FROM pg_database;
+
+--delete from hechos.visita;-- where id_cliente = 3;
+--delete from dimension.cliente;-- where id_cliente <> 22;
 
 
 
@@ -394,9 +415,160 @@ delete from dimension.cliente;-- where id_cliente <> 22;
 
 --SELECT * FROM pg_class c WHERE c.relkind = 'S';
 
-
-
-
+select sum(numero_registros) 
+from (
+select count(1) as numero_registros from dimension.barrio
+union all
+select count(1) as numero_registros from dimension.cliente
+union all
+select count(1) as numero_registros from dimension.empresa
+union all
+select count(1) as numero_registros from dimension.estado
+union all
+select count(1) as numero_registros from dimension.geografia
+union all
+select count(1) as numero_registros from dimension.producto
+union all
+select count(1) as numero_registros from dimension.producto_pedido
+union all
+select count(1) as numero_registros from dimension.tiempo
+union all
+select count(1) as numero_registros from dimension.tiempo2
+union all
+select count(1) as numero_registros from dimension.tienda
+union all
+select count(1) as numero_registros from hechos.pedido
+union all
+select count(1) as numero_registros from hechos.visita
+) as tabla
+;
 
 
 */
+
+
+
+
+
+
+delete from hechos.visita where id_cliente in (3335,3338);
+delete from dimension.cliente  where id_cliente in (3335,3338);
+
+select * from hechos.visita 
+where 1=1
+--and id_tiempo = 20200811 
+and id_cliente = 3208
+order by 1 desc;
+
+
+select * from dimension.cliente 
+where tipo_cliente= 'covid'
+--and (sexo = '' or sexo is null)
+--and cedula = '2'
+--and (barrio is null or barrio = '')
+order by 1 asc;
+
+--59813483
+
+
+SELECT count(id_visita) FROM hechos.visita WHERE id_tiempo = 20200811;
+
+select 
+count( v.id_visita ) 
+--c.cedula, c.nombre, c.telefono, c.sexo, c.barrio, v.temperatura, v.fecha_visita, v.id_tiempo, c.barrio 
+from hechos.visita v, dimension.cliente c
+where v.id_cliente = c.id_cliente 
+and c.tipo_cliente = 'covid'
+and v.id_tiempo = 20200811
+--and c.sexo = 'F'
+--and c.cedula = '13072207'
+--order by v.fecha_visita desc
+;
+
+
+
+
+/*
+[dimension.tiempo]:
+LOAD
+Num#(Date(Fecha, 'YYYYMMDD'))            as IdTiempo,
+Year(Fecha)                              as Año,
+'S-'&Ceil (month(Fecha)/6)               as Semestre,
+'T-'&Ceil (month(Fecha)/3)               as Trimestre,
+Num(Month(Fecha),'00')                   as Mes,
+Month(Fecha)                             as MesNombre,
+Week(Fecha)                              as Semana,
+Day(Fecha)                               as Dia,
+Fecha									 as Fecha,
+Year(Fecha)&Num(Month(Fecha),'00')		 as AñoMes,
+Year(Fecha)&'-'&Month(Fecha)             as AñoMesNombre
+;
+
+LOAD 
+Date(IterNo()+$(vMin)-1)                 as Fecha
+AutoGenerate 1 
+While IterNo()+$(vMin)-1 <= num(Today());
+
+LET vMin=num('01/01/2018'); //<--Inicio del calendario
+
+--------------
+
+LIB CONNECT TO 'PostgreSQL';
+
+LOAD 
+ 	id_cliente, 
+	id_tiempo_fecha_creacion, 
+	cedula, 
+	nombre, 
+	telefono, 
+	sexo, 
+	tipo_cliente, 
+	barrio;
+
+[dimension.cliente]:
+SELECT "id_cliente",
+	"id_tiempo_fecha_creacion",
+	"cedula",
+	"nombre",
+	"telefono",
+	"sexo",
+	"tipo_cliente",
+	"barrio"
+FROM "dimension"."cliente" 
+WHERE tipo_cliente='covid'
+;
+
+
+---------------
+
+[hechos.visita]:
+
+LIB CONNECT TO 'PostgreSQL';
+
+LOAD 
+	id_visita,
+	id_cliente,
+//     Date(fecha_visita, 'YYYYMMDD') as IdTiempo,
+	temperatura, 
+	fecha_visita,
+    id_tiempo as IdTiempo
+;
+
+SELECT 
+	"id_visita",
+    "id_cliente",
+	"temperatura",
+	"fecha_visita",
+    "id_tiempo"
+FROM "hechos"."visita"
+;
+*/
+
+
+
+https://unicentrobi1.us.qlikcloud.com
+
+Email: asesor1biteam1@gmail.com	
+
+Password: Asesor1biteam1
+

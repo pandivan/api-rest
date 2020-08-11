@@ -33,5 +33,5 @@ public class Visita
 	@JoinColumn(name = "idCliente")
 	@ManyToOne(optional = false)
 	@JsonIgnore
-    private Cliente cliente;
+	private Cliente cliente;
 }

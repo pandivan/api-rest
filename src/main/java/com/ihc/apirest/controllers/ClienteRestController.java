@@ -1,5 +1,8 @@
 package com.ihc.apirest.controllers;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import com.ihc.apirest.models.Cliente;
 import com.ihc.apirest.models.Tienda;
 import com.ihc.apirest.repository.ClienteRepository;
@@ -28,6 +31,9 @@ public class ClienteRestController
 
     @Autowired
     TiendaRepository tiendaRepository;
+
+
+    SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
     
 
 
@@ -37,8 +43,10 @@ public class ClienteRestController
      * @return Cliente creado
      */
     @PostMapping(value="/covid")
-    public ResponseEntity<Boolean> crearCliente(@RequestBody Cliente cliente)
+    public ResponseEntity<Long> crearCliente(@RequestBody Cliente cliente)
     {
+        Long cantidadClientes = null;
+
         try 
         {
             cliente.getLstVisitas().get(0).setCliente(cliente);
@@ -46,11 +54,13 @@ public class ClienteRestController
             //Este metodo creará un usuario en BD
             clienteRepository.save(cliente);
 
-            return new ResponseEntity<Boolean>(true, HttpStatus.CREATED);
+            cantidadClientes = clienteRepository.aforoClientes(Long.parseLong(format.format(new Date())));
+            
+            return new ResponseEntity<Long>(cantidadClientes, HttpStatus.CREATED);
 		} 
         catch (Exception e) 
         {
-            return new ResponseEntity<Boolean>(false, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<Long>(cantidadClientes, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
      }
 
@@ -62,20 +72,24 @@ public class ClienteRestController
      * @return Cliente actualizado
      */
     @PutMapping("/covid")
-    public ResponseEntity<Boolean> actualizarCliente(@RequestBody Cliente cliente)
+    public ResponseEntity<Long> actualizarCliente(@RequestBody Cliente cliente)
     {
+        Long cantidadClientes = null;
+
         try 
         {
             cliente.getLstVisitas().get(0).setCliente(cliente);
 
             //Este metodo creará un usuario en BD
             clienteRepository.save(cliente);
+        
+            cantidadClientes = clienteRepository.aforoClientes(Long.parseLong(format.format(new Date())));
             
-            return new ResponseEntity<Boolean>(true, HttpStatus.CREATED);
+            return new ResponseEntity<Long>(cantidadClientes, HttpStatus.CREATED);
 		} 
         catch (Exception e) 
         {
-            return new ResponseEntity<Boolean>(false, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<Long>(cantidadClientes, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
      }
 	

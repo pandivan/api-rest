@@ -35,4 +35,8 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long>
      * @return Cliente
      */
     Cliente findByEmail(String email);
+
+
+    @Query(value = "SELECT count(id_visita) FROM hechos.visita WHERE id_tiempo = ?1", nativeQuery = true)
+    Long aforoClientes(Long idTiempo);
 }
