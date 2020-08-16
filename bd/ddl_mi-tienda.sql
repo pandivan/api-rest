@@ -316,13 +316,13 @@ insert into dimension.producto(id_producto, id_empresa, id_catalogo, categoria_n
 commit;
 
 
-select * from dimension.cliente where barrio = '';
+select * from dimension.cliente order by 1 desc;
 
 select * from dimension.cliente where sexo = '' or sexo is null order by 1 desc;
 
-update dimension.cliente set sexo = 'F' where id_cliente in(2783,2776,2648);
+update dimension.cliente set sexo = 'M' where id_cliente in(3554,3525);
 
-update dimension.cliente set sexo = 'M' where sexo = '';
+update dimension.cliente set sexo = 'F' where sexo = '';
 
 
 select * from dimension.empresa;
@@ -378,9 +378,9 @@ from dimension.producto
 
 
 
-select count(1) from dimension.cliente c where c.id_tiempo_fecha_creacion = 20200811
+select count(1) from dimension.cliente c where c.id_tiempo_fecha_creacion = 20200812
 union all
-select count(1) from hechos.visita v where v.id_tiempo = 20200811;
+select count(1) from hechos.visita v where v.id_tiempo = 20200812;
 
 
 
@@ -448,7 +448,7 @@ select count(1) as numero_registros from hechos.visita
 
 
 
-
+npm i @stomp/stompjs
 
 
 delete from hechos.visita where id_cliente in (3335,3338);
@@ -456,8 +456,8 @@ delete from dimension.cliente  where id_cliente in (3335,3338);
 
 select * from hechos.visita 
 where 1=1
---and id_tiempo = 20200811 
-and id_cliente = 3208
+and id_tiempo = 20200812
+--and id_cliente = 3208
 order by 1 desc;
 
 
@@ -572,3 +572,10 @@ Email: asesor1biteam1@gmail.com
 
 Password: Asesor1biteam1
 
+
+
+npm install sockjs-client --save
+
+yarn add sockjs-client 
+
+yarn add @stomp/stompjs
