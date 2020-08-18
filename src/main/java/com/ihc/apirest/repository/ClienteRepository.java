@@ -37,6 +37,9 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long>
     Cliente findByEmail(String email);
 
 
+    /**
+     * Método que permite calcular la cantidad de visitas que tiene acualtmente tiene la tienda
+     */
     @Query(value = "SELECT count(id_visita) FROM hechos.visita WHERE id_tiempo = ?1", nativeQuery = true)
     Long aforoClientes(Long idTiempo);
 }

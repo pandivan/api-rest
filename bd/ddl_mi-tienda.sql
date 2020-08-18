@@ -3,22 +3,24 @@ CREATE SCHEMA referencial;
 CREATE SCHEMA dimension;
 CREATE SCHEMA hechos;
 
+
 drop SCHEMA referencial;
 drop SCHEMA dimension;
 drop SCHEMA hechos; 
-
 */
+
+
+
 
 drop table hechos.visita;
 drop table dimension.producto_pedido;
 drop table hechos.pedido;
-drop table dimension.tienda;
 drop table dimension.producto;
 drop table dimension.cliente;
 drop table dimension.barrio;
 drop table dimension.empresa;
 drop table dimension.geografia;
-drop table dimension.tiempo;
+--drop table dimension.tiempo;
 drop table dimension.estado;
 
 
@@ -69,7 +71,7 @@ ALTER TABLE dimension.empresa ADD CONSTRAINT empresa_estado_fk FOREIGN KEY (id_e
 
 
 
-
+/*
 create table dimension.tiempo
 (
 id_tiempo integer not null,
@@ -93,30 +95,47 @@ fecha_inicio_semana date not null,
 fecha_fin_semana date not null,
 primary key (id_tiempo)
 );
+*/
 
 
 
-
-
-
-
-create table dimension.tienda
+create table dimension.barrio
 (
-id_tienda bigserial not null,
-id_geografia bigserial not null,
-id_tiempo_fecha_creacion integer DEFAULT cast(to_char(now(), 'YYYYMMDD') as integer) not null,
-nit varchar(50) not null,
+id_barrio bigserial not null,
 nombre varchar(255) not null,
-password varchar(255) not null,
-direccion varchar(255) not null,
-telefono varchar(50) not null,
-email varchar(100) null,
-estado smallint default 1 not null,
-primary key (id_tienda)
+primary key (id_barrio)
 );
 
-ALTER TABLE dimension.tienda ADD CONSTRAINT tienda_geografia_fk FOREIGN KEY (id_geografia) REFERENCES dimension.geografia (id_geografia);
-ALTER TABLE dimension.tienda ADD CONSTRAINT tienda_tiempo_fk FOREIGN KEY (id_tiempo_fecha_creacion) REFERENCES dimension.tiempo (id_tiempo);
+
+
+
+create table dimension.cliente
+(
+id_cliente bigserial not null,
+id_geografia bigserial not null,
+id_barrio bigserial not null,
+id_tiempo_fecha_creacion integer DEFAULT cast(to_char(NOW()::timestamp, 'YYYYMMDD') as integer) not null,
+cedula varchar(20) null,
+nombre varchar(255) not null,
+telefono varchar(50) not null,
+direccion varchar(255) null,
+email varchar(100) null,
+fecha_nacimiento date null,
+sexo varchar(1) not null,
+tipo_cliente varchar(10) not null,
+password varchar(255) null,
+barrio varchar(255) null,
+estado smallint default 1 not null,
+primary key (id_cliente)
+);
+
+ALTER TABLE dimension.cliente ADD CONSTRAINT cliente_barrio_fk FOREIGN KEY (id_barrio) REFERENCES dimension.barrio (id_barrio);
+ALTER TABLE dimension.cliente ADD CONSTRAINT cliente_tiempo_fk FOREIGN KEY (id_tiempo_fecha_creacion) REFERENCES dimension.tiempo (id_tiempo);
+alter table dimension.cliente alter column id_barrio drop not null;
+ALTER TABLE dimension.cliente ADD CONSTRAINT cliente_geografia_fk FOREIGN KEY (id_geografia) REFERENCES dimension.geografia (id_geografia);
+alter table dimension.cliente alter column id_geografia drop not null;
+
+
 
 
 
@@ -148,42 +167,6 @@ ALTER TABLE dimension.producto ADD CONSTRAINT producto_estado_fk FOREIGN KEY (id
 
 
 
-create table dimension.barrio
-(
-id_barrio bigserial not null,
-nombre varchar(255) not null,
-primary key (id_barrio)
-);
-
-
-
-
-create table dimension.cliente
-(
-id_cliente bigserial not null,
-id_barrio bigserial not null,
-id_tiempo_fecha_creacion integer DEFAULT cast(to_char(now(), 'YYYYMMDD') as integer) not null,
-cedula varchar(20) null,
-nombre varchar(255) not null,
-telefono varchar(50) not null,
-direccion varchar(255) null,
-email varchar(100) null,
-fecha_nacimiento date null,
-sexo varchar(1) not null,
-tipo_cliente varchar(10) not null,
-password varchar(255) null,
-barrio varchar(255) null,
-primary key (id_cliente)
-);
-
-ALTER TABLE dimension.cliente ADD CONSTRAINT cliente_barrio_fk FOREIGN KEY (id_barrio) REFERENCES dimension.barrio (id_barrio);
-ALTER TABLE dimension.cliente ADD CONSTRAINT cliente_tiempo_fk FOREIGN KEY (id_tiempo_fecha_creacion) REFERENCES dimension.tiempo (id_tiempo);
-alter table dimension.cliente alter column id_barrio drop not null;
-
-
-
-
-
 
 create table hechos.pedido
 (
@@ -196,7 +179,7 @@ id_tiempo integer DEFAULT cast(to_char(now(), 'YYYYMMDD') as integer) not null,
 primary key (id_pedido)
 );
 
-ALTER TABLE hechos.pedido ADD CONSTRAINT pedido_tienda_fk FOREIGN KEY (id_tienda) REFERENCES dimension.tienda (id_tienda);
+ALTER TABLE hechos.pedido ADD CONSTRAINT pedido_tienda_fk  FOREIGN KEY (id_cliente) REFERENCES dimension.cliente (id_cliente);
 ALTER TABLE hechos.pedido ADD CONSTRAINT pedido_cliente_fk FOREIGN KEY (id_cliente) REFERENCES dimension.cliente (id_cliente);
 ALTER TABLE hechos.pedido ADD CONSTRAINT pedido_estado_fk FOREIGN KEY (id_estado) REFERENCES dimension.estado (id_estado);
 ALTER TABLE hechos.pedido ADD CONSTRAINT pedido_tiempo_fk FOREIGN KEY (id_tiempo) REFERENCES dimension.tiempo (id_tiempo);
@@ -237,20 +220,21 @@ primary key (id_visita)
 
 
 ALTER TABLE hechos.visita ADD CONSTRAINT visita_cliente_fk FOREIGN KEY (id_cliente) REFERENCES dimension.cliente (id_cliente);
-ALTER TABLE hechos.visita ADD CONSTRAINT visita_tiempo_fk FOREIGN KEY (id_tiempo) REFERENCES dimension.tiempo (id_tiempo);
-ALTER TABLE hechos.visita ADD CONSTRAINT visita_tienda_fk FOREIGN KEY (id_tienda) REFERENCES dimension.tienda (id_tienda);
+ALTER TABLE hechos.visita ADD CONSTRAINT visita_tienda_fk  FOREIGN KEY (id_cliente) REFERENCES dimension.cliente (id_cliente);
+ALTER TABLE hechos.visita ADD CONSTRAINT visita_tiempo_fk  FOREIGN KEY (id_tiempo) REFERENCES dimension.tiempo (id_tiempo);
 
 
 SET timezone TO 'America/Bogota';
 
+--select * from dimension.barrio b ;
 
+commit;
 
 insert into dimension.geografia(id_pais,pais,departamento,ciudad) values('CO','Colombia','Valle del Cauca','Cali');
 insert into dimension.geografia(id_pais,pais,departamento,ciudad) values('CO','Colombia','Nariño','Pasto');
 insert into dimension.barrio(nombre) values('Valle de Lili');
-INSERT INTO dimension.tiempo SELECT * FROM dimension.tiempo2;
-insert into dimension.tienda(id_geografia,id_tiempo_fecha_creacion,nit,nombre,password,direccion,telefono, email) values(2,20200701,'900.317.814-5','unicentro','1234','Calle 11 Nº 34-78 Barrio La Aurora de Pasto','3104709828', 'unicentro@unicentro.com');
-insert into dimension.tienda(id_geografia,id_tiempo_fecha_creacion,nit,nombre,password,direccion,telefono, email) values(1,20200702,'777','Plazolete Lili','1234','Calle 45 # 100 39','3333333', 'plazoleta@gmail.com');
+insert into dimension.cliente (id_geografia,id_tiempo_fecha_creacion,cedula,nombre,password,direccion,telefono, email, tipo_cliente, sexo, id_barrio, barrio ) values(2,20200701,'900.317.814-5','unicentro','1234','Calle 11 Nº 34-78 Barrio La Aurora de Pasto','3104709828', 'unicentro@unicentro.com', 'tienda', 'M', 1, 'Valle de Lili');
+insert into dimension.cliente (id_geografia,id_tiempo_fecha_creacion,cedula,nombre,password,direccion,telefono, email, tipo_cliente, sexo, id_barrio, barrio ) values(1,20200702,'777','Plazolete Lili','1234','Calle 45 # 100 39','3333333', 'plazoleta@gmail.com', 'tienda', 'M', 1, 'Valle de Lili');
 insert into dimension.estado(id_estado, descripcion) values(100, 'PENDIENTE');
 insert into dimension.estado(id_estado, descripcion) values(101, 'ACEPTADO');
 insert into dimension.estado(id_estado, descripcion) values(102, 'CANCELADO');
@@ -260,7 +244,7 @@ insert into dimension.estado(id_estado, descripcion) values(105, 'DESPACHADO');
 insert into dimension.empresa(id_empresa, id_geografia, tipo, nit, nombre, id_estado) values(100, 1, 'F', '1010', 'Coca Cola', 103);
 insert into dimension.empresa(id_empresa, id_geografia, tipo, nit, nombre, id_estado) values(101, 1, 'F', '1010', 'Corner Burger', 103);
 insert into dimension.empresa(id_empresa, id_geografia, tipo, nit, nombre, id_estado) values(102, 1, 'F', '1010', 'Cheers', 103);
-INSERT INTO dimension.cliente SELECT * FROM dimension.cliente2;
+commit;
 
 
 insert into dimension.producto(id_producto, id_empresa, id_catalogo, categoria_nivel1, ean, nombre, nivel, valor, url_imagen_categoria, url_imagen_producto, id_estado) values(100, 101, 100, 'American', 'ean-Beef Grill', 'Beef Grill', 1, 24, 'http://tutofox.com/foodapp//categories/american.png', 'http://tutofox.com/foodapp//food/american/beef-grill.png', 103);
@@ -316,6 +300,7 @@ insert into dimension.producto(id_producto, id_empresa, id_catalogo, categoria_n
 commit;
 
 
+/*
 select * from dimension.cliente order by 1 desc;
 
 select * from dimension.cliente where sexo = '' or sexo is null order by 1 desc;
@@ -326,8 +311,6 @@ update dimension.cliente set sexo = 'F' where sexo = '';
 
 
 select * from dimension.empresa;
-
-select * from dimension.tienda;
 
 select * from dimension.geografia;
 
@@ -361,7 +344,7 @@ from hechos.pedido p
 inner join dimension.producto_pedido pp on pp.id_pedido = p.id_pedido
 inner join dimension.producto pro on pro.id_producto = pp.id_producto
 inner join dimension.cliente c on c.id_cliente = p.id_cliente
-left outer join dimension.tienda t on t.id_tienda = p.id_tienda
+left outer join dimension.cliente t on t.id_cliente = p.id_tienda
 inner join dimension.estado e on e.id_estado = p.id_estado
 where 1=1
 --and p.id_tienda is null
@@ -370,17 +353,14 @@ where 1=1
 
 
 
-select id_producto, categoria_nivel1, nombre, valor, url_imagen_categoria, url_imagen_producto 
-from dimension.producto
-;
 
 
 
 
 
-select count(1) from dimension.cliente c where c.id_tiempo_fecha_creacion = 20200812
+select count(1) from dimension.cliente c where c.id_tiempo_fecha_creacion = 20200818
 union all
-select count(1) from hechos.visita v where v.id_tiempo = 20200812;
+select count(1) from hechos.visita v where v.id_tiempo = 20200818;
 
 
 
@@ -444,7 +424,7 @@ select count(1) as numero_registros from hechos.visita
 ;
 
 
-*/
+
 
 
 
@@ -488,82 +468,6 @@ and v.id_tiempo = 20200811
 
 
 
-/*
-[dimension.tiempo]:
-LOAD
-Num#(Date(Fecha, 'YYYYMMDD'))            as IdTiempo,
-Year(Fecha)                              as Año,
-'S-'&Ceil (month(Fecha)/6)               as Semestre,
-'T-'&Ceil (month(Fecha)/3)               as Trimestre,
-Num(Month(Fecha),'00')                   as Mes,
-Month(Fecha)                             as MesNombre,
-Week(Fecha)                              as Semana,
-Day(Fecha)                               as Dia,
-Fecha									 as Fecha,
-Year(Fecha)&Num(Month(Fecha),'00')		 as AñoMes,
-Year(Fecha)&'-'&Month(Fecha)             as AñoMesNombre
-;
-
-LOAD 
-Date(IterNo()+$(vMin)-1)                 as Fecha
-AutoGenerate 1 
-While IterNo()+$(vMin)-1 <= num(Today());
-
-LET vMin=num('01/01/2018'); //<--Inicio del calendario
-
---------------
-
-LIB CONNECT TO 'PostgreSQL';
-
-LOAD 
- 	id_cliente, 
-	id_tiempo_fecha_creacion, 
-	cedula, 
-	nombre, 
-	telefono, 
-	sexo, 
-	tipo_cliente, 
-	barrio;
-
-[dimension.cliente]:
-SELECT "id_cliente",
-	"id_tiempo_fecha_creacion",
-	"cedula",
-	"nombre",
-	"telefono",
-	"sexo",
-	"tipo_cliente",
-	"barrio"
-FROM "dimension"."cliente" 
-WHERE tipo_cliente='covid'
-;
-
-
----------------
-
-[hechos.visita]:
-
-LIB CONNECT TO 'PostgreSQL';
-
-LOAD 
-	id_visita,
-	id_cliente,
-//     Date(fecha_visita, 'YYYYMMDD') as IdTiempo,
-	temperatura, 
-	fecha_visita,
-    id_tiempo as IdTiempo
-;
-
-SELECT 
-	"id_visita",
-    "id_cliente",
-	"temperatura",
-	"fecha_visita",
-    "id_tiempo"
-FROM "hechos"."visita"
-;
-*/
-
 
 
 https://unicentrobi1.us.qlikcloud.com
@@ -574,8 +478,70 @@ Password: Asesor1biteam1
 
 
 
-npm install sockjs-client --save
 
-yarn add sockjs-client 
 
-yarn add @stomp/stompjs
+
+
+
+
+
+<Container>
+        <Content contentContainerStyle={styles.contentProductos}>
+          <View style={styles.viewBanner}>
+            <Swiper style={styles.swiperBanner} showsButtons={false} autoplay={false} autoplayTimeout={2}>
+            {
+              this.state.arrayBanner.map((banner, index)=>
+              {
+                return( <Image style={styles.imageBanner} resizeMode="contain" source={{uri: banner}} key={index}/> )
+              })
+            }
+            </Swiper>
+            <View style={{height:20}	} />
+          </View>
+
+          <View style={styles.viewCategoriasProductos}>
+            <FlatList
+              data={this.state.arrayCategorias}
+              renderItem={ ({ item }) => this.visualizarCategorias(item) }
+              horizontal={ true }
+              keyExtractor={ (item) => item.idCategoria.toString() }
+            />
+
+            <FlatList 
+              data={this.state.arrayProductos}
+              renderItem={ ({ item }) => this.visualizarProductos(item) }
+              numColumns={2}
+              keyExtractor={ (item) => item.idProducto.toString() }
+            />
+          </View>
+        </Content>
+      </Container>
+      
+      
+      
+      
+      <FlatList
+        ListHeaderComponent=
+        {(
+          <>
+            <Content contentContainerStyle={styles.contentProductos}>
+              <View style={styles.viewBanner}>
+                <Swiper style={styles.swiperBanner} showsButtons={false} autoplay={false} autoplayTimeout={2}>
+                {
+                  this.state.arrayBanner.map((banner, index)=>
+                  {
+                    return( <Image style={styles.imageBanner} resizeMode="contain" source={{uri: banner}} key={index}/> )
+                  })
+                }
+                </Swiper>
+                <View style={{height:20}} />
+              </View>
+            </Content>
+          </>
+        )}
+        data={this.state.arrayCategorias}
+        renderItem={ ({ item }) => this.visualizarCategorias(item) }
+        horizontal={ true }
+        keyExtractor={ (item) => item.idCategoria.toString() }
+      />
+*/

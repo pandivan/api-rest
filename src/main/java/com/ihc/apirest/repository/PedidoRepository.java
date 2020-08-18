@@ -65,4 +65,14 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long>
      * @return Listado de pedidos aceptados
      */
     List<Pedido> findByIdTiendaAndIdEstado(Long idTienda, Long idEstado);
+
+
+
+    /**
+     * Método que permite obtener todos los pedidos del cliente del día actual
+     * @param idCliente Id del cliente
+     * @param idEstado Id del estado
+     * @return Listado de pedidos aceptados
+     */
+    List<Pedido> findByCliente(Long idCliente);
 }

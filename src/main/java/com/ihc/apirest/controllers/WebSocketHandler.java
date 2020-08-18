@@ -23,7 +23,7 @@ public class WebSocketHandler extends TextWebSocketHandler
     @Override
     public void afterConnectionEstablished(WebSocketSession session) 
     {
-        System.out.println("New WebSocket connection with id:::::: "+ session.getId() + " desde el cliente:: " + session.getRemoteAddress().getHostName() + " Websocket::: " + session.getUri().getPath());
+        // System.out.println("New WebSocket connection with id:::::: "+ session.getId() + " desde el cliente:: " + session.getRemoteAddress().getHostName() + " Websocket::: " + session.getUri().getPath());
 
         if("/tienda-websocket".equals(session.getUri().getPath()))
         {

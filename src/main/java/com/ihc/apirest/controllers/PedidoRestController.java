@@ -1,5 +1,6 @@
 package com.ihc.apirest.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.ihc.apirest.models.Pedido;
@@ -138,12 +139,32 @@ public class PedidoRestController
      * Método que permite obtener todos los pedidos aceptados por la tienda
      * @return Listado de pedidos
      */
-    @GetMapping(value = "/pedido/{idTienda}")
+    @GetMapping(value = "/pedido/tienda/{idTienda}")
     public ResponseEntity<List<Pedido>> getAllHistorialPedidosTienda(@PathVariable("idTienda") Long idTienda)
     {
         try
         {
             List<Pedido> lstPedidos = pedidoRepository.findByIdTiendaAndIdEstado(idTienda, ID_ESTADO_ACEPTADO);
+
+            return new ResponseEntity<List<Pedido>>(lstPedidos, HttpStatus.OK);
+        }
+        catch (Exception e) 
+        {
+			return new ResponseEntity<List<Pedido>>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    /**
+     * Método que permite obtener todos los pedidos realizados por el cliente
+     * @return Listado de pedidos
+     */
+    @GetMapping(value = "/pedido/clientes/{idCliente}")
+    public ResponseEntity<List<Pedido>> getAllHistorialPedidosCliente(@PathVariable("idCliente") Long idCliente)
+    {
+        try
+        {
+            List<Pedido> lstPedidos = new ArrayList<>();  //pedidoRepository.findByCliente(idCliente);
 
             return new ResponseEntity<List<Pedido>>(lstPedidos, HttpStatus.OK);
         }
