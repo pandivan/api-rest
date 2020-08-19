@@ -2,6 +2,7 @@ package com.ihc.apirest.repository;
 
 import java.util.List;
 
+import com.ihc.apirest.models.Cliente;
 import com.ihc.apirest.models.Pedido;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -74,5 +75,5 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long>
      * @param idEstado Id del estado
      * @return Listado de pedidos aceptados
      */
-    List<Pedido> findByCliente(Long idCliente);
+    List<Pedido> findByCliente(Cliente cliente);
 }

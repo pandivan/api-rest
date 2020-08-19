@@ -48,6 +48,10 @@ public class Cliente
 	@Transient
 	private boolean tendero;
 
+	public Cliente(Long idCliente) 
+	{
+		this.idCliente = idCliente;
+	}
 
 	public Cliente(Long idCliente, String nombre, boolean tendero) 
 	{

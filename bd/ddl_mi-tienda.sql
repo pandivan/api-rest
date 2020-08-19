@@ -300,7 +300,7 @@ insert into dimension.producto(id_producto, id_empresa, id_catalogo, categoria_n
 commit;
 
 
-/*
+
 select * from dimension.cliente order by 1 desc;
 
 select * from dimension.cliente where sexo = '' or sexo is null order by 1 desc;
@@ -327,15 +327,15 @@ select * from dimension.cliente order by 1 desc;
 select * from hechos.visita order by 2;
 
 
-update hechos.pedido set id_tienda = null, id_estado = 100 where id_pedido in (1,2);
+update hechos.pedido set id_tienda = null, id_estado = 100 where id_pedido in (1,2,3,4,5,6,7);
 
-update hechos.pedido set id_tienda = 1, id_estado = 101 where id_pedido in (1,2);
 
-update hechos.pedido set id_estado = 101 where id_pedido in (1,2);
 
 select * from hechos.pedido;
 
 select * from dimension.producto_pedido;
+
+truncate table hechos.pedido;
 
 
 
@@ -352,8 +352,8 @@ where 1=1
 ;
 
 
-
-
+--Usuario: registrounicentropasto@gmail.com
+--Clave: Registrounicentropasto*2020
 
 
 
@@ -412,8 +412,6 @@ union all
 select count(1) as numero_registros from dimension.producto_pedido
 union all
 select count(1) as numero_registros from dimension.tiempo
-union all
-select count(1) as numero_registros from dimension.tiempo2
 union all
 select count(1) as numero_registros from dimension.tienda
 union all

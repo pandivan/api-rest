@@ -3,6 +3,7 @@ package com.ihc.apirest.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ihc.apirest.models.Cliente;
 import com.ihc.apirest.models.Pedido;
 import com.ihc.apirest.models.ProductoPedido;
 import com.ihc.apirest.repository.PedidoRepository;
@@ -159,12 +160,12 @@ public class PedidoRestController
      * Método que permite obtener todos los pedidos realizados por el cliente
      * @return Listado de pedidos
      */
-    @GetMapping(value = "/pedido/clientes/{idCliente}")
+    @GetMapping(value = "/pedido/cliente/{idCliente}")
     public ResponseEntity<List<Pedido>> getAllHistorialPedidosCliente(@PathVariable("idCliente") Long idCliente)
     {
         try
         {
-            List<Pedido> lstPedidos = new ArrayList<>();  //pedidoRepository.findByCliente(idCliente);
+            List<Pedido> lstPedidos = pedidoRepository.findByCliente(new Cliente(idCliente));
 
             return new ResponseEntity<List<Pedido>>(lstPedidos, HttpStatus.OK);
         }
