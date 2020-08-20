@@ -334,7 +334,7 @@ select * from dimension.producto_pedido;
 
 truncate table hechos.pedido;
 
-delete from dimension.cliente where id_cliente = 4;
+delete from dimension.cliente where id_cliente > 4;
 
 select p.id_pedido, t.nombre tienda, pro.nombre producto, pp.cantidad, pp.valor, c.nombre cliente, p.fecha_pedido, e.descripcion estado, e.id_estado 
 from hechos.pedido p 
