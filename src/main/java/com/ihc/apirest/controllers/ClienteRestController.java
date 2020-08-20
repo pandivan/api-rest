@@ -126,26 +126,26 @@ public class ClienteRestController
      * @return Cliente creado
      */
     @PostMapping(value="/barrio")
-    public ResponseEntity<Boolean> crearClienteBarrio(@RequestBody Cliente cliente)
+    public ResponseEntity<Cliente> crearClienteBarrio(@RequestBody Cliente cliente)
     {
         try 
         {
-            Cliente clienteBD = clienteRepository.findByEmail(cliente.getEmail());
+            Cliente clienteExistente = clienteRepository.findByEmail(cliente.getEmail());
 
             //Se valida que el email del cliente no este registrado en la plataforma
-            if(null != clienteBD)
+            if(null != clienteExistente)
             {
-                return new ResponseEntity<Boolean>(false, HttpStatus.CREATED);
+                return new ResponseEntity<Cliente>(clienteExistente, HttpStatus.CREATED);
             }
 
             //Este metodo creará un usuario en BD para la app de [mi-bario-app]
-            clienteRepository.save(cliente);
+            Cliente clienteBD = clienteRepository.save(cliente);
 
-            return new ResponseEntity<Boolean>(true, HttpStatus.CREATED);
+            return new ResponseEntity<Cliente>(clienteBD, HttpStatus.CREATED);
 		} 
         catch (Exception e) 
         {
-            return new ResponseEntity<Boolean>(false, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<Cliente>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
      }
 

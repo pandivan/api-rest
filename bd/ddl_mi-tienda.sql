@@ -58,11 +58,11 @@ primary key (id_geografia)
 create table dimension.empresa
 (
 id_empresa bigserial not null,
-id_geografia bigserial not null,
+id_geografia bigint not null,
 tipo varchar(1) not null,
 nit varchar(50) null,
 nombre varchar(255) not null,
-id_estado bigserial not null,
+id_estado bigint not null,
 primary key (id_empresa)
 );
 
@@ -112,8 +112,8 @@ primary key (id_barrio)
 create table dimension.cliente
 (
 id_cliente bigserial not null,
-id_geografia bigserial not null,
-id_barrio bigserial not null,
+id_geografia bigint null,
+id_barrio bigint null,
 id_tiempo_fecha_creacion integer DEFAULT cast(to_char(NOW()::timestamp, 'YYYYMMDD') as integer) not null,
 cedula varchar(20) null,
 nombre varchar(255) not null,
@@ -131,12 +131,9 @@ primary key (id_cliente)
 
 ALTER TABLE dimension.cliente ADD CONSTRAINT cliente_barrio_fk FOREIGN KEY (id_barrio) REFERENCES dimension.barrio (id_barrio);
 ALTER TABLE dimension.cliente ADD CONSTRAINT cliente_tiempo_fk FOREIGN KEY (id_tiempo_fecha_creacion) REFERENCES dimension.tiempo (id_tiempo);
-alter table dimension.cliente alter column id_barrio drop not null;
+--alter table dimension.cliente alter column id_barrio drop not null;
 ALTER TABLE dimension.cliente ADD CONSTRAINT cliente_geografia_fk FOREIGN KEY (id_geografia) REFERENCES dimension.geografia (id_geografia);
-alter table dimension.cliente alter column id_geografia drop not null;
-
-
-
+--alter table dimension.cliente alter column id_geografia drop not null;
 
 
 
@@ -144,8 +141,9 @@ alter table dimension.cliente alter column id_geografia drop not null;
 create table dimension.producto
 (
 id_producto bigserial not null,
-id_empresa bigserial not null,
+id_empresa bigint not null,
 id_catalogo smallint not null,
+id_estado bigint not null,
 categoria_nivel1 varchar(100) not null,
 categoria_nivel2 varchar(100) null,
 categoria_nivel3 varchar(100) null,
@@ -157,7 +155,6 @@ nivel smallint not null,
 valor numeric(8,2) null,
 url_imagen_categoria varchar(4000) null,
 url_imagen_producto varchar(4000) null,
-id_estado bigserial not null,
 primary key (id_producto)
 );
 
@@ -171,9 +168,9 @@ ALTER TABLE dimension.producto ADD CONSTRAINT producto_estado_fk FOREIGN KEY (id
 create table hechos.pedido
 (
 id_pedido bigserial not null,
-id_tienda bigserial not null,
-id_cliente bigserial not null,
-id_estado bigserial not null,
+id_tienda bigint null,
+id_cliente bigint not null,
+id_estado bigint not null,
 fecha_pedido TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP not null,
 id_tiempo integer DEFAULT cast(to_char(now(), 'YYYYMMDD') as integer) not null,
 primary key (id_pedido)
@@ -183,15 +180,15 @@ ALTER TABLE hechos.pedido ADD CONSTRAINT pedido_tienda_fk  FOREIGN KEY (id_clien
 ALTER TABLE hechos.pedido ADD CONSTRAINT pedido_cliente_fk FOREIGN KEY (id_cliente) REFERENCES dimension.cliente (id_cliente);
 ALTER TABLE hechos.pedido ADD CONSTRAINT pedido_estado_fk FOREIGN KEY (id_estado) REFERENCES dimension.estado (id_estado);
 ALTER TABLE hechos.pedido ADD CONSTRAINT pedido_tiempo_fk FOREIGN KEY (id_tiempo) REFERENCES dimension.tiempo (id_tiempo);
-alter table hechos.pedido alter column id_tienda drop not null;
+--alter table hechos.pedido alter column id_tienda drop not null;
 
 
 
 create table dimension.producto_pedido
 (
 id_producto_pedido bigserial not null,
-id_pedido bigserial not null,
-id_producto bigserial not null,
+id_pedido bigint not null,
+id_producto bigint not null,
 cantidad smallint not null,
 valor numeric(8,2) not null,
 primary key (id_producto_pedido)
@@ -210,8 +207,8 @@ ALTER TABLE dimension.producto_pedido ADD CONSTRAINT productopedido_producto_fk 
 create table hechos.visita
 (
 id_visita bigserial not null,
-id_cliente bigserial not null,
-id_tienda bigserial not null,
+id_cliente bigint not null,
+id_tienda bigint not null,
 id_tiempo integer DEFAULT cast(to_char(now(), 'YYYYMMDD') as integer) not null,
 temperatura numeric(4,2) not null,
 fecha_visita TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP not null,
@@ -226,7 +223,7 @@ ALTER TABLE hechos.visita ADD CONSTRAINT visita_tiempo_fk  FOREIGN KEY (id_tiemp
 
 SET timezone TO 'America/Bogota';
 
---select * from dimension.barrio b ;
+
 
 commit;
 
@@ -337,7 +334,7 @@ select * from dimension.producto_pedido;
 
 truncate table hechos.pedido;
 
-
+delete from dimension.cliente where id_cliente = 4;
 
 select p.id_pedido, t.nombre tienda, pro.nombre producto, pp.cantidad, pp.valor, c.nombre cliente, p.fecha_pedido, e.descripcion estado, e.id_estado 
 from hechos.pedido p 
@@ -358,9 +355,9 @@ where 1=1
 
 
 
-select count(1) from dimension.cliente c where c.id_tiempo_fecha_creacion = 20200818
+select count(1) from dimension.cliente c where c.id_tiempo_fecha_creacion = 20200819
 union all
-select count(1) from hechos.visita v where v.id_tiempo = 20200818;
+select count(1) from hechos.visita v where v.id_tiempo = 20200819;
 
 
 
