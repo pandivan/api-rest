@@ -1,9 +1,9 @@
 package com.ihc.apirest.controllers;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+// import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+// import java.util.Map;
 
 import com.ihc.apirest.models.Catalogo;
 import com.ihc.apirest.models.Categoria;

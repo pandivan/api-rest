@@ -19,10 +19,10 @@ drop table dimension.producto;
 drop table dimension.cliente;
 drop table dimension.barrio;
 drop table dimension.empresa;
-drop table dimension.geografia;
 --drop table dimension.tiempo;
 drop table dimension.estado;
-
+drop table dimension.aforo;
+drop table dimension.geografia;
 
 
 
@@ -131,9 +131,7 @@ primary key (id_cliente)
 
 ALTER TABLE dimension.cliente ADD CONSTRAINT cliente_barrio_fk FOREIGN KEY (id_barrio) REFERENCES dimension.barrio (id_barrio);
 ALTER TABLE dimension.cliente ADD CONSTRAINT cliente_tiempo_fk FOREIGN KEY (id_tiempo_fecha_creacion) REFERENCES dimension.tiempo (id_tiempo);
---alter table dimension.cliente alter column id_barrio drop not null;
 ALTER TABLE dimension.cliente ADD CONSTRAINT cliente_geografia_fk FOREIGN KEY (id_geografia) REFERENCES dimension.geografia (id_geografia);
---alter table dimension.cliente alter column id_geografia drop not null;
 
 
 
@@ -180,7 +178,7 @@ ALTER TABLE hechos.pedido ADD CONSTRAINT pedido_tienda_fk  FOREIGN KEY (id_clien
 ALTER TABLE hechos.pedido ADD CONSTRAINT pedido_cliente_fk FOREIGN KEY (id_cliente) REFERENCES dimension.cliente (id_cliente);
 ALTER TABLE hechos.pedido ADD CONSTRAINT pedido_estado_fk FOREIGN KEY (id_estado) REFERENCES dimension.estado (id_estado);
 ALTER TABLE hechos.pedido ADD CONSTRAINT pedido_tiempo_fk FOREIGN KEY (id_tiempo) REFERENCES dimension.tiempo (id_tiempo);
---alter table hechos.pedido alter column id_tienda drop not null;
+
 
 
 
@@ -219,6 +217,22 @@ primary key (id_visita)
 ALTER TABLE hechos.visita ADD CONSTRAINT visita_cliente_fk FOREIGN KEY (id_cliente) REFERENCES dimension.cliente (id_cliente);
 ALTER TABLE hechos.visita ADD CONSTRAINT visita_tienda_fk  FOREIGN KEY (id_cliente) REFERENCES dimension.cliente (id_cliente);
 ALTER TABLE hechos.visita ADD CONSTRAINT visita_tiempo_fk  FOREIGN KEY (id_tiempo) REFERENCES dimension.tiempo (id_tiempo);
+
+
+
+
+create table dimension.aforo
+(
+id_aforo bigserial not null,
+fecha_ingreso TIMESTAMP WITH TIME ZONE null,
+fecha_salida TIMESTAMP WITH TIME ZONE null,
+primary key (id_aforo)
+);
+
+
+
+
+
 
 
 SET timezone TO 'America/Bogota';
@@ -294,24 +308,30 @@ insert into dimension.producto(id_producto, id_empresa, id_catalogo, categoria_n
 insert into dimension.producto(id_producto, id_empresa, id_catalogo, categoria_nivel1, ean, nombre, nivel, valor, url_imagen_categoria, url_imagen_producto, id_estado) values(121, 101, 100, 'Drink', 'ean-Sprite', 'Sprite', 1, 30, 'http://tutofox.com/foodapp//categories/drink.png', 'http://tutofox.com/foodapp//food/drink/sprite.png', 103);
 
 
+--insert into dimension.aforo(fecha_ingreso) values(TIMESTAMP '2011-05-16 15:36:38');
+--insert into dimension.aforo(fecha_salida) values(TIMESTAMP '2011-05-16 16:36:38');
+
 commit;
 
 
 
-select * from dimension.cliente order by 1 desc;
 
-select * from dimension.cliente where sexo = '' or sexo is null order by 1 desc;
 
-update dimension.cliente set sexo = 'M' where id_cliente in(3554,3525);
 
-update dimension.cliente set sexo = 'F' where sexo = '';
+
+select count(1), cedula, id_tiempo_fecha_creacion from dimension.cliente 
+group by cedula,id_tiempo_fecha_creacion having count(1)>1 
+order by 3 desc
+;
+
+
 
 
 select * from dimension.empresa;
 
 select * from dimension.geografia;
 
-select * from dimension.tiempo;
+select min(id_tiempo ) from dimension.tiempo;
 
 select * from dimension.barrio;
 
@@ -321,7 +341,36 @@ select * from dimension.producto;
 
 select * from dimension.cliente order by 1 desc;
 
-select * from hechos.visita order by 2;
+select  * from dimension.aforo order by 1 desc;
+
+select * from hechos.visita;
+
+
+
+
+select  * from dimension.aforo
+where fecha_ingreso >= CURRENT_DATE or fecha_salida >= CURRENT_DATE;
+
+
+truncate table dimension.aforo;
+
+
+select 
+(
+select count(1)
+from dimension.aforo
+where fecha_ingreso is not null and fecha_ingreso >= CURRENT_DATE
+) ingreso,
+(
+select count(1)
+from dimension.aforo
+where fecha_salida is not null and fecha_salida >= CURRENT_DATE
+) salida
+;
+
+
+
+
 
 
 update hechos.pedido set id_tienda = null, id_estado = 100 where id_pedido in (1,2,3,4,5,6,7);
@@ -352,12 +401,20 @@ where 1=1
 --Usuario: registrounicentropasto@gmail.com
 --Clave: Registrounicentropasto*2020
 
+select * from dimension.cliente c where c.cedula like '%1085311585%' or c.telefono = '3186243428'
+--or c.id_tiempo_fecha_creacion = 20200825 
+order by 1 desc;
+
+--6292 + 849 = 7141
+
+select * from hechos.visita v order by 1 desc;
+
+delete from hechos.visita v where v.id_tiempo < 20200824;
 
 
-
-select count(1) from dimension.cliente c where c.id_tiempo_fecha_creacion = 20200819
+select count(1) from dimension.cliente c where c.id_tiempo_fecha_creacion = 20200826
 union all
-select count(1) from hechos.visita v where v.id_tiempo = 20200819;
+select count(1) from hechos.visita v where v.id_tiempo = 20200826;
 
 
 
@@ -379,7 +436,6 @@ FROM pg_database;
 
 --delete from hechos.visita;-- where id_cliente = 3;
 --delete from dimension.cliente;-- where id_cliente <> 22;
-
 
 
 --create table dimension.tiempo2 as (select * from dimension.tiempo);
@@ -423,53 +479,13 @@ select count(1) as numero_registros from hechos.visita
 
 
 
-npm i @stomp/stompjs
 
 
-delete from hechos.visita where id_cliente in (3335,3338);
-delete from dimension.cliente  where id_cliente in (3335,3338);
+--https://unicentrobi1.us.qlikcloud.com
 
-select * from hechos.visita 
-where 1=1
-and id_tiempo = 20200812
---and id_cliente = 3208
-order by 1 desc;
+--Email: asesor1biteam1@gmail.com	
 
-
-select * from dimension.cliente 
-where tipo_cliente= 'covid'
---and (sexo = '' or sexo is null)
---and cedula = '2'
---and (barrio is null or barrio = '')
-order by 1 asc;
-
---59813483
-
-
-SELECT count(id_visita) FROM hechos.visita WHERE id_tiempo = 20200811;
-
-select 
-count( v.id_visita ) 
---c.cedula, c.nombre, c.telefono, c.sexo, c.barrio, v.temperatura, v.fecha_visita, v.id_tiempo, c.barrio 
-from hechos.visita v, dimension.cliente c
-where v.id_cliente = c.id_cliente 
-and c.tipo_cliente = 'covid'
-and v.id_tiempo = 20200811
---and c.sexo = 'F'
---and c.cedula = '13072207'
---order by v.fecha_visita desc
-;
-
-
-
-
-
-
-https://unicentrobi1.us.qlikcloud.com
-
-Email: asesor1biteam1@gmail.com	
-
-Password: Asesor1biteam1
+--Password: Asesor1biteam1
 
 
 
@@ -478,65 +494,60 @@ Password: Asesor1biteam1
 
 
 
+****************************************************************************************************************************************************************************
+ * SOPORTE
+ *****************************************************************************************************************************************************************************
 
 
-<Container>
-        <Content contentContainerStyle={styles.contentProductos}>
-          <View style={styles.viewBanner}>
-            <Swiper style={styles.swiperBanner} showsButtons={false} autoplay={false} autoplayTimeout={2}>
-            {
-              this.state.arrayBanner.map((banner, index)=>
-              {
-                return( <Image style={styles.imageBanner} resizeMode="contain" source={{uri: banner}} key={index}/> )
-              })
-            }
-            </Swiper>
-            <View style={{height:20}	} />
-          </View>
+create or replace function get_film_titles()
+   returns text as $$
+declare 
+	 titles text default '';
+	 rec_film   record;
+	 cur_films cursor
+		 for select count(1), cedula, id_tiempo_fecha_creacion from dimension.cliente group by cedula,id_tiempo_fecha_creacion having count(1)>1 order by 3 desc;
+begin
+   -- open the cursor
+   open cur_films;
+	
+   loop
+    -- fetch row into the film
+      fetch cur_films into rec_film;
+    -- exit when no more row to fetch
+      exit when not found;
 
-          <View style={styles.viewCategoriasProductos}>
-            <FlatList
-              data={this.state.arrayCategorias}
-              renderItem={ ({ item }) => this.visualizarCategorias(item) }
-              horizontal={ true }
-              keyExtractor={ (item) => item.idCategoria.toString() }
-            />
-
-            <FlatList 
-              data={this.state.arrayProductos}
-              renderItem={ ({ item }) => this.visualizarProductos(item) }
-              numColumns={2}
-              keyExtractor={ (item) => item.idProducto.toString() }
-            />
-          </View>
-        </Content>
-      </Container>
+    -- build the output
       
-      
-      
-      
-      <FlatList
-        ListHeaderComponent=
-        {(
-          <>
-            <Content contentContainerStyle={styles.contentProductos}>
-              <View style={styles.viewBanner}>
-                <Swiper style={styles.swiperBanner} showsButtons={false} autoplay={false} autoplayTimeout={2}>
-                {
-                  this.state.arrayBanner.map((banner, index)=>
-                  {
-                    return( <Image style={styles.imageBanner} resizeMode="contain" source={{uri: banner}} key={index}/> )
-                  })
-                }
-                </Swiper>
-                <View style={{height:20}} />
-              </View>
-            </Content>
-          </>
-        )}
-        data={this.state.arrayCategorias}
-        renderItem={ ({ item }) => this.visualizarCategorias(item) }
-        horizontal={ true }
-        keyExtractor={ (item) => item.idCategoria.toString() }
-      />
+         titles := titles || ',' || rec_film.cedula;
+        
+        update hechos.visita v set id_cliente = (select max(id_cliente ) from dimension.cliente where cedula = rec_film.cedula)
+		where id_cliente in (select id_cliente from dimension.cliente where cedula = rec_film.cedula);
+		
+		
+		 
+		delete 
+		from hechos.visita v 
+		where id_cliente in (select id_cliente from dimension.cliente where cedula = rec_film.cedula)
+		and id_visita != (select max(id_visita) from hechos.visita v where id_cliente in (select id_cliente from dimension.cliente where cedula = rec_film.cedula))
+		;
+		
+		
+		delete from dimension.cliente where cedula = rec_film.cedula and id_cliente != (select max(id_cliente ) from dimension.cliente where cedula = rec_film.cedula);
+		
+        
+        
+   end loop;
+  
+--  	commit;
+  
+   -- close the cursor
+   close cur_films;
+
+   return titles;
+end; $$
+
+language plpgsql;
+
+select get_film_titles();
+
 */
