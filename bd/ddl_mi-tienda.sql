@@ -348,24 +348,35 @@ select * from hechos.visita;
 
 
 
-select  * from dimension.aforo
-where fecha_ingreso >= CURRENT_DATE or fecha_salida >= CURRENT_DATE;
+
+select  
+--min(fecha_ingreso ), max(fecha_ingreso ), CURRENT_DATE
+count(1) 
+--delete
+from dimension.aforo
+--where fecha_ingreso < CURRENT_DATE or fecha_salida < CURRENT_DATE
+--order by 1 desc
+;
 
 
 truncate table dimension.aforo;
 
 
-select 
+select ingreso, salida, (ingreso - salida) aforo, (ingreso + salida) total
+from 
 (
-select count(1)
-from dimension.aforo
-where fecha_ingreso is not null and fecha_ingreso >= CURRENT_DATE
-) ingreso,
-(
-select count(1)
-from dimension.aforo
-where fecha_salida is not null and fecha_salida >= CURRENT_DATE
-) salida
+	select 
+	(
+		select count(1)
+		from dimension.aforo
+		where fecha_ingreso is not null and fecha_ingreso >= CURRENT_DATE
+	) ingreso,
+	(
+		select count(1)
+		from dimension.aforo
+		where fecha_salida is not null and fecha_salida >= CURRENT_DATE
+	) salida
+) tabla
 ;
 
 
