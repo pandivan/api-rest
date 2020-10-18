@@ -341,7 +341,9 @@ select * from dimension.producto;
 
 select * from dimension.cliente order by 1 desc;
 
-select  * from dimension.aforo order by 1 desc;
+select  * from dimension.aforo 
+--order by 1 desc
+;
 
 select * from hechos.visita;
 
@@ -350,11 +352,11 @@ select * from hechos.visita;
 
 
 select  
---min(fecha_ingreso ), max(fecha_ingreso ), CURRENT_DATE
-count(1) 
+min(fecha_ingreso ), max(fecha_ingreso ), CURRENT_DATE
+--count(1) 
 --delete
 from dimension.aforo
---where fecha_ingreso < CURRENT_DATE or fecha_salida < CURRENT_DATE
+--where fecha_ingreso < CURRENT_DATE --or fecha_salida < CURRENT_DATE
 --order by 1 desc
 ;
 
@@ -411,6 +413,20 @@ where 1=1
 
 --Usuario: registrounicentropasto@gmail.com
 --Clave: Registrounicentropasto*2020
+
+
+--GMAIL
+--Usuario: unicentropastocc@gmail.com
+--Clave: Unicentro*71
+
+--HEROKU
+--Usuario: unicentropastocc@gmail.com
+--Clave: Unicentro*71
+
+--GITHUB
+--Usuario: unicentropastocc@gmail.com
+--Clave: Unicentro*71
+
 
 select * from dimension.cliente c where c.cedula like '%1085311585%' or c.telefono = '3186243428'
 --or c.id_tiempo_fecha_creacion = 20200825 
@@ -498,6 +514,10 @@ select count(1) as numero_registros from hechos.visita
 
 --Password: Asesor1biteam1
 
+--Unicentro	unicentrobi9@gmail.com	Demobi*71	Unicentrobi9	Unicentrobi9	Activo	ya	14 septiembre - 14 octubre 2020	
+--Unicentro	registrounicentropasto@gmail.com	Registrounicentropasto*2020			Activo			
+--"Usuario Heroku: registrounicentropasto@gmail.com Clave Heroku: Unicentrocloud*"
+
 
 
 
@@ -562,3 +582,7 @@ language plpgsql;
 select get_film_titles();
 
 */
+
+
+
+--SD594153
